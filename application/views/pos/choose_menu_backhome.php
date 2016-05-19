@@ -31,7 +31,7 @@
         <div class="col-md-5">
             <form action="<?= base_url() ?>pos/buy_back_home" method="POST">
               
-                <input type="hidden"  name="order_id" value="">
+                <input type="hidden"  name="active_order_id" value="<?=$active_order_id?>">
                 <input type="hidden"  name="list_menu" value="list_menu">
                 <div class="box box-widget">
                     <div class="box-header with-border bg-purple">
@@ -72,7 +72,7 @@
                                     <div class="col-md-12 font-18 font-light">
                                         Items : <span id="num_rows">0</span>
                                     </div>
-                                    <div class="col-md-12 font-light">
+                                    <div class="col-md-12 font-light hidden">
                                         <input type="checkbox" name="" checked=""> ส่ง Barista 
                                     </div>
                                 </div>

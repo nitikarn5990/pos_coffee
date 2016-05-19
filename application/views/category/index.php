@@ -10,78 +10,7 @@
 </section>
 <!-- Main content -->
 <section class="content">
-    <div class="row">
-             <div class="col-md-12">
-        <div class="tiles">
-            <div class="tile bg-blue">
-                <div class="tile-body">
-                    <i class="fa fa-bar-chart-o"></i>
-                </div>
-                <div class="tile-object">
-                    <div class="name">
-                        Reports
-                    </div>
-                    <div class="number">
-                    </div>
-                </div>
-            </div>
-            <div class="tile bg-blue">
-                <div class="tile-body">
-                    <i class="fa fa-briefcase"></i>
-                </div>
-                <div class="tile-object">
-                    <div class="name">
-                        Documents
-                    </div>
-                    <div class="number">
-                        124
-                    </div>
-                </div>
-            </div>
-            <div class="tile image double selected">
-                <div class="tile-body">
-                    <img src="../../assets/admin/pages/media/gallery/image4.jpg" alt="">
-                </div>
-                <div class="tile-object">
-                    <div class="name">
-                        Gallery
-                    </div>
-                    <div class="number">
-                        124
-                    </div>
-                </div>
-            </div>
-            <div class="tile bg-blue selected">
-                <div class="corner">
-                </div>
-                <div class="check">
-                </div>
-                <div class="tile-body">
-                    <i class="fa fa-cogs"></i>
-                </div>
-                <div class="tile-object">
-                    <div class="name">
-                        Settings
-                    </div>
-                </div>
-            </div>
-            <div class="tile bg-blue">
-                <div class="tile-body">
-                    <i class="fa fa-plane"></i>
-                </div>
-                <div class="tile-object">
-                    <div class="name">
-                        Projects
-                    </div>
-                    <div class="number">
-                        34
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-
+    
     
     <div class="row">
         <div class="col-md-12">
@@ -119,7 +48,7 @@
         <div class="col-xs-12">
             <form action="<?= base_url() ?>category/delete" method="POST">
                 <div class="box box-widget">
-                    <div class="box-header with-border bg-purple">
+                    <div class="box-header with-border ">
                         <div class="col-md-12">
                             <a href="<?= base_url('category/add') ?>" class="btn btn-success  btn-flat btn-sm" name="btn_submit" value="เพิ่มข้อมูล"><i class="fa fa-plus"></i> เพิ่มข้อมูล</a>
                             <button type="submit" class="btn btn-danger btn-flat btn-sm" name="btn_submit" value="ลบที่เลือก"><i class="fa fa-trash"></i> ลบที่เลือก</button>

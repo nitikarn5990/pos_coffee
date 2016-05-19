@@ -32,229 +32,122 @@ class report extends CI_Controller {
 
     public function index() {
 
-        // $this->load->view('bill', '', false);
+     
+        redirect('report/sales');
     }
 
-    public function fetch_comments() {
 
-
-        $this->db->select("*, CONCAT(customer_firstname, ' ', customer_lastname) as full_name");
-        $this->db->from('active_rent');
-        $this->db->join('room', 'active_rent.room_id = room.id');
-        $this->db->join('member', 'active_rent.member_id = member.id');
-
-        $start_date = '2016-08';
-        $end_date = '2016-08';
-
-        $this->db->where('pay_monthly BETWEEN "' . $start_date . '" and "' . $end_date . '"');
-
-        $query = $this->db->get();
-        return $query->result_array();
-    }
-
-    public function unpaid() {
+    public function sales() {
 
 
         if ($this->input->post('btn_submit') == 'ค้นหา') {
 
+            
+        
+            if ($this->input->post('report_type') == 'ยอดขาย') {
 
-            $this->db->select("*, active_rent.id , active_rent.rental_id,CONCAT(customer_firstname, ' ', customer_lastname) as full_name");
-            $this->db->from('active_rent');
-            $this->db->join('room', 'active_rent.room_id = room.id');
-            $this->db->join('member', 'active_rent.member_id = member.id');
 
-            if (trim($this->input->post('rental_id')) != '') {
-                $this->db->where('rental_id = ' . trim($this->input->post('rental_id')));
+                $this->db->select("DATE_FORMAT(active_order.created_at, '%Y-%m-%d') AS formatted_date ,active_order.created_at, SUM(active_order_detail.qty * active_order_detail.price ) as total ");
+                $this->db->from('active_order');
+                $this->db->where('paid_date !=', '0000-00-00 00:00:00');
+                $this->db->join('active_order_detail', 'active_order.id = active_order_detail.active_order_id');
+
+                //  $this->db->join('member', 'active_rent.member_id = member.id');
+                $start_date = trim($this->input->post('date_start'));
+                $end_date = trim($this->input->post('date_end'));
+
+                if (trim($start_date) != '' && trim($end_date) != '') {
+
+                    $this->db->where('active_order.created_at BETWEEN "' . $start_date . '" and "' . $end_date . '"');
+                    $this->db->group_by('DATE(active_order.created_at)');
+
+                    // echo $this->db->get_compiled_select();
+                    // die();
+                    $query = $this->db->get();
+                    //   print_r($query->result_array());
+                    //    die();
+
+                    $dataView = [
+                        'res_active_order_sales' => $query->result_array(),
+                        'type' => 'ยอดขาย'
+                            //'result_active_payment' => $result_active_payment
+                    ];
+
+                    $data = array(
+                        'content' => $this->load->view('report/sales', $dataView, true),
+                    );
+                    $this->load->view('main_layout', $data);
+                } else {
+                    redirect('report/sales');
+                }
             }
+            if ($this->input->post('report_type') == 'สินค้า') {
 
-            if (trim($this->input->post('customer_firstname')) != '') {
 
-                $this->db->like('customer_firstname ', trim($this->input->post('customer_firstname')));
+                $this->db->select("active_order_detail.*,SUM(active_order_detail.qty * active_order_detail.price) as total_price");
+                $this->db->select("SUM(active_order_detail.qty) as total_qty");
+                $this->db->select("menu.product");
+                $this->db->from('active_order');
+                $this->db->where('paid_date !=', '0000-00-00 00:00:00');
+                $this->db->join('active_order_detail', 'active_order.id = active_order_detail.active_order_id');
+                $this->db->join('menu', 'active_order_detail.menu_id = menu.id');
+
+                //  $this->db->join('member', 'active_rent.member_id = member.id');
+                $start_date = trim($this->input->post('date_start'));
+                $end_date = trim($this->input->post('date_end'));
+
+                if (trim($start_date) != '' && trim($end_date) != '') {
+
+                    $this->db->where('active_order.created_at BETWEEN "' . $start_date . '" and "' . $end_date . '"');
+                    $this->db->group_by('active_order_detail.menu_id');
+                    $this->db->group_by('active_order_detail.menu_type');
+                    $this->db->order_by('active_order_detail.menu_id', 'ASC');
+                    $this->db->order_by('active_order_detail.menu_type', 'ASC');
+
+                    // echo $this->db->get_compiled_select();
+                    // die();
+                    $query = $this->db->get();
+                    //  print_r($query->result_array());
+                    //  die();
+
+                    $dataView = [
+                        'res_active_order_sales' => $query->result_array(),
+                        'type' => 'สินค้า'
+                            //'result_active_payment' => $result_active_payment
+                    ];
+
+                    $data = array(
+                        'content' => $this->load->view('report/sales', $dataView, true),
+                    );
+                    $this->load->view('main_layout', $data);
+                } else {
+                    redirect('report/sales');
+                }
             }
-            if (trim($this->input->post('customer_lastname')) != '') {
-
-                $this->db->like('customer_lastname ', trim($this->input->post('customer_lastname')));
-            }
-            if (trim($this->input->post('number_room')) != '') {
-
-
-                $this->db->where("number_room = " . trim($this->input->post('number_room')));
-            }
-            if (trim($this->input->post('pay_monthly1')) != '' && trim($this->input->post('pay_monthly2')) != '') {
-
-                $start_date = trim($this->input->post('pay_monthly1'));
-                $end_date = trim($this->input->post('pay_monthly2'));
-
-                $this->db->where('pay_monthly BETWEEN "' . $start_date . '" and "' . $end_date . '"');
-            }
-
-
-            $query = $this->db->get();
-            //print_r($query->result_array());
-            // die();
-
-
-
-            $dataView = [
-                'res_active_rent' => $query->result_array(),
-                    //'result_active_payment' => $result_active_payment
-            ];
-
-            $data = array(
-                'content' => $this->load->view('report/unpaid', $dataView, true),
-            );
-            $this->load->view('main_layout', $data);
         } else {
 
-            $this->db->select("*, active_rent.id , active_rent.rental_id,CONCAT(customer_firstname, ' ', customer_lastname) as full_name");
-            $this->db->from('active_rent');
-            $this->db->join('room', 'active_rent.room_id = room.id');
-            $this->db->join('member', 'active_rent.member_id = member.id');
+
+
+            $this->db->select("DATE_FORMAT(active_order.created_at, '%Y-%m-%d') AS formatted_date ,active_order.created_at, SUM(active_order_detail.qty * active_order_detail.price ) as total ");
+            $this->db->from('active_order');
+            $this->db->where('paid_date !=', '0000-00-00 00:00:00');
+            $this->db->join('active_order_detail', 'active_order.id = active_order_detail.active_order_id');
+            $this->db->group_by('DATE(active_order.created_at)');
+
             $query = $this->db->get();
+
             $dataView = [
-                'res_active_rent' => $query->result_array(),
-                    //'result_active_payment' => $result_active_payment
+                'res_active_order_sales' => $query->result_array(),
+                'type' => ''
             ];
+
             $data = array(
-                'content' => $this->load->view('report/unpaid', $dataView, true),
+                'content' => $this->load->view('report/sales', $dataView, true),
             );
             $this->load->view('main_layout', $data);
         }
     }
 
-     public function income() {
-
-
-        if ($this->input->post('btn_submit') == 'ค้นหา') {
-
-
-            $this->db->select("*, active_rent.id , active_rent.rental_id,CONCAT(customer_firstname, ' ', customer_lastname) as full_name");
-            $this->db->from('active_rent');
-            $this->db->join('room', 'active_rent.room_id = room.id');
-            $this->db->join('member', 'active_rent.member_id = member.id');
-
-           
-            if (trim($this->input->post('pay_monthly1')) != '' && trim($this->input->post('pay_monthly2')) != '') {
-
-                $start_date = trim($this->input->post('pay_monthly1'));
-                $end_date = trim($this->input->post('pay_monthly2'));
-
-                $this->db->where('pay_monthly BETWEEN "' . $start_date . '" and "' . $end_date . '"');
-            }
-
-
-            $query = $this->db->get();
-            //print_r($query->result_array());
-            // die();
-
-
-
-            $dataView = [
-                'res_active_rent' => $query->result_array(),
-                    //'result_active_payment' => $result_active_payment
-            ];
-
-            $data = array(
-                'content' => $this->load->view('report/income', $dataView, true),
-            );
-            $this->load->view('main_layout', $data);
-        } else {
-
-            $this->db->select("*, active_rent.id , active_rent.rental_id,CONCAT(customer_firstname, ' ', customer_lastname) as full_name");
-            $this->db->from('active_rent');
-            $this->db->join('room', 'active_rent.room_id = room.id');
-            $this->db->join('member', 'active_rent.member_id = member.id');
-            $query = $this->db->get();
-            $dataView = [
-                'res_active_rent' => $query->result_array(),
-                    //'result_active_payment' => $result_active_payment
-            ];
-            $data = array(
-                'content' => $this->load->view('report/income', $dataView, true),
-            );
-            $this->load->view('main_layout', $data);
-        }
-    }
-    public function bill_end_month($id = '') {
-
-
-
-        $res_active_rent = $this->db->get_where('active_rent', array('id' => $id))->row_array();
-        $number_room = $this->db->get_where('room', array('id' => $res_active_rent['room_id']))->row_array()['number_room'];
-
-        $res_member = $this->db->get_where('member', array('id' => $res_active_rent['member_id']))->row_array();
-
-
-        $electric_rate = $this->db->get_where('electric_rate', array('id' => 1))->row_array()['rate_price'];
-        $water_rate = $this->db->get_where('water_rate', array('id' => 1))->row_array()['rate_price'];
-
-        $data = [
-            'res_active_rent' => $res_active_rent,
-            'number_room' => $number_room,
-            'monthly' => ShowDateTh($res_active_rent['pay_monthly']),
-            'updated_at' => ShowDateThTime(DATE_TIME),
-            'res_member' => $res_member,
-            'electric_rate' => $electric_rate,
-            'water_rate' => $water_rate
-        ];
-
-        //บิลเก็บเงินตอนสิ้นเดือน
-        $this->load->view('bill_end_month', $data, false);
-    }
-
-    public function bill_end_month_receipt($id = '') {
-        //พิมพ์ใบเสร็จรับเงิน
-
-        $res_active_rent = $this->db->get_where('active_rent', array('id' => $id))->row_array();
-
-
-
-        $number_room = $this->db->get_where('room', array('id' => $res_active_rent['room_id']))->row_array()['number_room'];
-
-        $res_member = $this->db->get_where('member', array('id' => $res_active_rent['member_id']))->row_array();
-
-
-        $electric_rate = $this->db->get_where('electric_rate', array('id' => 1))->row_array()['rate_price'];
-        $water_rate = $this->db->get_where('water_rate', array('id' => 1))->row_array()['rate_price'];
-
-        $data = [
-            'res_active_rent' => $res_active_rent,
-            'number_room' => $number_room,
-            'monthly' => ShowDateTh($res_active_rent['pay_monthly']),
-            'updated_at' => ShowDateThTime(DATE_TIME),
-            'res_member' => $res_member,
-            'electric_rate' => $electric_rate,
-            'water_rate' => $water_rate
-        ];
-
-        //บิลเก็บเงินตอนสิ้นเดือน
-        $this->load->view('bill_end_month_receipt', $data, false);
-    }
-
-    public function bill_el_water() {
-
-        //บิลเก็บเงินตอนสิ้นเดือน
-        $this->load->view('bill_el_water', '', false);
-    }
-
-    public function bill3() {
-        $this->load->view('bill', '', false);
-    }
-
-    public function bill2() {
-
-
-        $data = [];
-
-        //load mPDF library
-        $this->load->library('m_pdf');
-
-        $html = $this->load->view('bill', $data, true);
-
-        $this->m_pdf->pdf->WriteHTML($html);
-        //download it.
-
-        $this->m_pdf->pdf->Output();
-    }
+   
 
 }

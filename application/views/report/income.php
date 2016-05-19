@@ -1,7 +1,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <i class="fa fa-file-text"></i> รายงานสรุปรายรับประจำเดือน
+        <i class="fa fa-file-text"></i> รายงานยอดขาย
     </h1>
     <ol class="breadcrumb hidden">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -40,26 +40,42 @@
         </div>
         <div class="col-md-12">
             <form action="<?= base_url() ?>report/income" method="POST">
-                <div class="box box-success">
+                 <input type="hidden" id="date_start" name="date_start">
+                 <input type="hidden" id="date_end" name="date_end">
+                <div class=" box box-success">
 
                     <div class="box-header with-border">
                         <h3 class="box-title"><i class="fa fa-search"></i> ค้นหา</h3>
                     </div>
                     <div class="box-body">
+                        <div class="row hidden">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">ตั้งแต่เดือน</label>
+                                <div class="col-md-4">
+                                    <div id="datepicker1" data-date="<?= $this->input->post('pay_monthly1') == '' ? '12/03/2012' : $this->input->post('pay_monthly1') ?>"></div>
+                                    <input type="hidden" id="my_hidden_input1" name="pay_monthly1">
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    ถึง
+                                </div>
 
-                        <div class="form-group">
-                            <label class="control-label col-md-2">ตั้งแต่เดือน</label>
-                            <div class="col-md-4">
-                                <div id="datepicker1" data-date="<?= $this->input->post('pay_monthly1') == '' ? '12/03/2012' : $this->input->post('pay_monthly1') ?>"></div>
-                                <input type="hidden" id="my_hidden_input1" name="pay_monthly1">
+                                <div class="col-md-4">
+                                    <div id="datepicker2" data-date="<?= $this->input->post('pay_monthly2') == '' ? '12/03/2012' : $this->input->post('pay_monthly2') ?>"></div>
+                                    <input type="hidden" id="my_hidden_input2" name="pay_monthly2">
+                                </div>
                             </div>
-                            <div class="col-md-1 text-center">
-                                ถึง
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 col-xs-12">
+                            <div class="form-group">
+                                <label>Date range:</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="text" readonly="" class="form-control" id="reservation">
+                                </div><!-- /.input group -->
                             </div>
-
-                            <div class="col-md-4">
-                                <div id="datepicker2" data-date="<?= $this->input->post('pay_monthly2') == '' ? '12/03/2012' : $this->input->post('pay_monthly2') ?>"></div>
-                                <input type="hidden" id="my_hidden_input2" name="pay_monthly2">
                             </div>
                         </div>
 
@@ -77,7 +93,7 @@
                     </div>
                     <div class="box-body">
                         <div class="table-responsive" id="tb_1">
-                            <h4 class="text-center">รายงานสรุปรายรับประจำเดือน</h4>
+                            <h4 class="text-center">รายงานยอดขาย</h4>
                             <h4 class="text-center">  <?= empty($_POST['pay_monthly1']) ? '' : $_POST['pay_monthly1'] ?> -  <?= empty($_POST['pay_monthly2']) ? '' : $_POST['pay_monthly2'] ?></h4>
 
                             <table id="" class="table table-bordered" cellspacing="0" width="100%">
@@ -102,9 +118,9 @@
 
                                 <tbody>
                                     <?php
-                                      $total_income = 0;
+                                    $total_income = 0;
                                     foreach ($res_active_rent as $key => $row) {
-                                      
+
                                         $result_active_payment = $this->db->get_where('active_payment', array('active_rent_id' => $row['id']))->result_array();
 
                                         //หายอดเงินที่ชำระมาแล้ว
@@ -212,6 +228,8 @@
 <script src="<?= base_url() ?>assets/plugins/datatable2/semantic.min.js"></script>
 
 <!-- date-range-picker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+<script src="<?= base_url() ?>assets/plugins/daterangepicker/daterangepicker.js"></script>
 
 <style>
     .ui-datepicker-calendar {
@@ -229,12 +247,30 @@
             $('.chkbox').prop('checked', this.checked);
         });
 
+        $('#reservation2').daterangepicker({
+            format: 'YYYY-MM-DD'
+        });
+
+        $('#reservation').daterangepicker(
+                {
+                    locale: {
+                        format: 'YYYY-MM-DD'
+                    },
+                    
+                },
+        function (start, end, label) {
+            $('#date_start').val(start.format('YYYY-MM-DD')+ " 00:00:00");
+             $('#date_end').val(end.format('YYYY-MM-DD')+  " 23:59:59");
+       
+         //   alert("A new date range was chosen: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        });
+
         //date start
         $('#datepicker1').datepicker({
-            format: 'yyyy-mm',
+            format: 'yyyy-mm-d',
             todayHighlight: true,
             language: 'th',
-            minViewMode: 'months',
+            //  minViewMode: 'months',
         });
         $('#datepicker1').on("changeDate", function () {
             $('#my_hidden_input1').val(

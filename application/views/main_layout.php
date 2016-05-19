@@ -54,6 +54,7 @@
 
         <link rel="stylesheet" type="text/css" href="<?= base_url() ?>assets/plugins/popr/popr.css">
         <script type="text/javascript" src="<?= base_url() ?>assets/plugins/popr/popr.js"></script>
+        
 
     </head>
     <body class="sidebar-mini sidebar-collapse skin-purple ">
@@ -76,7 +77,7 @@
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">
                             <!-- Messages: style can be found in dropdown.less-->
-                            <li class="dropdown messages-menu">
+                            <li class="dropdown messages-menu hidden">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="fa fa-envelope-o"></i>
                                     <span class="label label-success">4</span>
@@ -152,7 +153,7 @@
                                 </ul>
                             </li>
                             <!-- Notifications: style can be found in dropdown.less -->
-                            <li class="dropdown notifications-menu">
+                            <li class="dropdown notifications-menu hidden">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="fa fa-bell-o"></i>
                                     <span class="label label-warning">10</span>
@@ -193,7 +194,7 @@
                                 </ul>
                             </li>
                             <!-- Tasks: style can be found in dropdown.less -->
-                            <li class="dropdown tasks-menu">
+                            <li class="dropdown tasks-menu hidden">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="fa fa-flag-o"></i>
                                     <span class="label label-danger">9</span>
@@ -263,7 +264,7 @@
                                 </ul>
                             </li>
                             <!-- User Account: style can be found in dropdown.less -->
-                            <li class="dropdown user user-menu">
+                            <li class="dropdown user user-menu ">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <img src="<?= base_url() ?>assets/dist/img/default_user.png" class="user-image" alt="User Image">
                                     <span class="hidden-xs"><?= $this->session->userdata('name') ?></span>
@@ -301,7 +302,7 @@
                                 </ul>
                             </li>
                             <!-- Control Sidebar Toggle Button -->
-                            <li>
+                            <li class="hidden">
                                 <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
                             </li>
                         </ul>
@@ -343,7 +344,7 @@
             </aside>
 
             <!-- Content Wrapper. Contains page content -->
-            <div class="content-wrapper">
+            <div class="content-wrapper" style="background-color: white;">
                 <?= isset($content) ? ($content) : '' ?>
             </div><!-- /.content-wrapper -->
             <footer class="main-footer">
@@ -546,6 +547,8 @@
 
         <script src="<?= base_url() ?>assets/plugins/datatable2/jquery.dataTables.min.js"></script>
         <script src="<?= base_url() ?>assets/dataTables.bootstrap.min.js"></script>
+          <script src=" http://malsup.github.io/jquery.blockUI.js"></script>
+       
         <script>
                     $('document').ready(function () {
                         $('body').removeClass('skin-yellow').addClass('skin-purple');
@@ -560,6 +563,9 @@
             .disable{
                 pointer-events: none;
 
+            }
+            #list-menu table i, table tbody tr{
+                cursor: pointer;
             }
         </style>
 

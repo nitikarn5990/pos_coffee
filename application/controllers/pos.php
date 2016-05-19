@@ -62,7 +62,7 @@ class Pos extends CI_Controller {
     public function _new_order($table_number = '') {
 
         if ($table_number != '') {
-            //add new
+//add new
             $this->db->trans_begin();
 
             $arrOrder = array(
@@ -78,7 +78,7 @@ class Pos extends CI_Controller {
                     $qty = $this->input->post('menu_qty')[$key];
                     $price = $this->input->post('menu_price')[$key];
 
-                    //  $total = $price * $qty;
+//  $total = $price * $qty;
 
                     $arrOrderDetail = array(
                         'active_order_id' => $insert_id,
@@ -96,7 +96,7 @@ class Pos extends CI_Controller {
                 }
             }
 
-            //check rollback
+//check rollback
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
             } else {
@@ -109,8 +109,53 @@ class Pos extends CI_Controller {
         }
     }
 
+    public function _new_order_backhome() {
+
+
+//add new
+        $this->db->trans_begin();
+
+        $arrOrder = array(
+            'tables_number' => 0, //กลับบ้านจะเป็น 0
+            'users_id' => $this->session->userdata('users_id'),
+            'created_at' => DATE_TIME,
+            'updated_at' => DATE_TIME,
+        );
+        if ($this->db->insert('active_order', $arrOrder)) {
+            $insert_id = $this->db->insert_id();
+            foreach ($this->input->post('menu_id') as $key => $value) {
+
+                $qty = $this->input->post('menu_qty')[$key];
+                $price = $this->input->post('menu_price')[$key];
+
+                $arrOrderDetail = array(
+                    'active_order_id' => $insert_id,
+                    'menu_id' => $value,
+                    'menu_type' => $this->_getMenuType($this->input->post('menu_type')[$key]),
+                    'qty' => $qty,
+                    'price' => $price,
+                    'created_at' => DATE_TIME,
+                    'updated_at' => DATE_TIME,
+                );
+
+                $this->db->insert('active_order_detail', $arrOrderDetail);
+            }
+        }
+
+//check rollback
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+        } else {
+            $this->db->trans_complete();
+        }
+
+
+        redirect('pos/buy_back_home');
+        die();
+    }
+
     public function _check_item_duplicate($active_order_id = '', $menu_id = '', $menu_type = '') {
-        //check ซ้ำรายการ ให้ update จำนวน
+//check ซ้ำรายการ ให้ update จำนวน
         $this->db->select('*');
         $this->db->from('active_order_detail');
         $this->db->where("active_order_id  = " . $active_order_id);
@@ -119,10 +164,64 @@ class Pos extends CI_Controller {
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
-            //update
+//update
             return 'update';
         } else {
             return 'new';
+        }
+    }
+
+    public function _update_order_backhome($active_order_id = '') {
+
+        if ($active_order_id != '') {
+
+            $this->db->trans_begin();
+
+            foreach ($this->input->post('menu_id') as $key => $value) {
+
+                $qty = $this->input->post('menu_qty')[$key];
+                $price = $this->input->post('menu_price')[$key];
+                $menu_type = $this->_getMenuType($this->input->post('menu_type')[$key]);
+
+                if ($this->_check_item_duplicate($active_order_id, $value, $menu_type) == 'update') {
+// echo 'update';
+
+                    $condition = array(
+                        'active_order_id' => $active_order_id,
+                        'menu_id' => $value,
+                        'menu_type' => $menu_type
+                    );
+                    $now_qty = $this->db->get_where('active_order_detail', $condition)
+                                    ->row_array()['qty'];
+
+//update จำนวน
+                    $this->db->where('active_order_id', $active_order_id);
+                    $this->db->where('menu_id', $value);
+                    $this->db->where('menu_type', $menu_type);
+                    $this->db->update('active_order_detail', ['qty' => $qty + $now_qty, 'updated_at' => DATE_TIME]);
+                } else {
+//new
+                    $arrOrderDetail = array(
+                        'active_order_id' => $active_order_id,
+                        'menu_id' => $value,
+                        'menu_type' => $menu_type,
+                        'qty' => $qty,
+                        'price' => $price,
+                        'created_at' => DATE_TIME,
+                        'updated_at' => DATE_TIME,
+                    );
+
+                    $this->db->insert('active_order_detail', $arrOrderDetail);
+                }
+            }
+//check rollback
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+            } else {
+                $this->db->trans_complete();
+            }
+            redirect('pos/buy_back_home');
+            die();
         }
     }
 
@@ -149,13 +248,13 @@ class Pos extends CI_Controller {
                     $now_qty = $this->db->get_where('active_order_detail', $condition)
                                     ->row_array()['qty'];
 
-                    //update จำนวน
+//update จำนวน
                     $this->db->where('active_order_id', $active_order_id);
                     $this->db->where('menu_id', $value);
                     $this->db->where('menu_type', $menu_type);
                     $this->db->update('active_order_detail', ['qty' => $qty + $now_qty, 'updated_at' => DATE_TIME]);
                 } else {
-                    //new
+//new
                     $arrOrderDetail = array(
                         'active_order_id' => $active_order_id,
                         'menu_id' => $value,
@@ -171,7 +270,7 @@ class Pos extends CI_Controller {
                     }
                 }
             }
-            //check rollback
+//check rollback
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
             } else {
@@ -197,7 +296,7 @@ class Pos extends CI_Controller {
             $this->db->trans_begin();
 
 
-            //check โต๊ะที่จะย้ายต้องปิด order ไปแล้ว
+//check โต๊ะที่จะย้ายต้องปิด order ไปแล้ว
             $this->db->select('*');
             $this->db->from('active_order');
             $this->db->where("tables_number = " . $new_table);
@@ -207,7 +306,7 @@ class Pos extends CI_Controller {
 
                 $this->db->update('active_order', ['tables_number' => $new_table], "paid_date = '0000-00-00 00:00:00' AND tables_number = " . $old_table);
             }
-            //check rollback
+//check rollback
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
             } else {
@@ -220,41 +319,33 @@ class Pos extends CI_Controller {
         }
     }
 
-      public function buy_back_home($id = '') {
+    public function buy_back_home($id = '') {
 
         if ($this->input->post('btn_submit') == 'add_queue') {
-            //มีการสั่ง order
-            //เช็ค 
-           
-          //  $table_num = $this->input->post('tables_number');
-            $this->db->select('*');
-            $this->db->from('active_order');
-            $this->db->where("tables_number = " . $table_num);
-            $this->db->where("paid_date = '0000-00-00 00:00:00'");
-            $query = $this->db->get();
-            
-            if ($query->num_rows() == 1) {
-                //update
-                $active_order_id = $query->row_array()['id'];
 
-                $this->_update_order($active_order_id);
-                 die();
+
+            $active_order_id = $this->input->post('active_order_id');
+
+            if ($active_order_id != '') {
+//update item same order
+                $this->_update_order_backhome($active_order_id);
+                die();
             } else {
 
-                //add new
-                $this->_new_order($table_num);
-                 die();
+//add new item same order
+                $this->_new_order_backhome();
+                die();
             }
-           
         } else {
-            // ถ้าไม่ได้สั่ง
-            //มีการเลือกโต๊ะ
-            if ($this->input->post('buy_back_home') != '') {
-           
+
+//มีการสั่งเพิ่ม update order
+            if ($this->input->post('active_order_id_selected_detail') != '') {
+
+
                 $this->db->select('*');
                 $this->db->from('category');
-                //    $this->db->where($condition);
-                //  $this->db->limit(1);
+//    $this->db->where($condition);
+//  $this->db->limit(1);
                 $this->db->order_by("id", "asc");
                 $query = $this->db->get();
 
@@ -263,7 +354,7 @@ class Pos extends CI_Controller {
                     $resultq1 = $query->result_array();
                     $data['resultq1'] = $resultq1;
                     $data['pos'] = 'buy_back_home';
-                  //  $data['tables_number'] = $this->input->post('tables_number');
+                    $data['active_order_id'] = $this->input->post('active_order_id_selected_detail');
 
 
 
@@ -276,13 +367,95 @@ class Pos extends CI_Controller {
                     );
                 }
             } else {
-                
-            
-                //แสดงหน้าเริ่มต้น
+
+
+//ลูกค้าคนใหม่สั่ง New order
+                if ($this->input->post('buy_back_home') == 'new_to_go') {
+
+                    $this->db->select('*');
+                    $this->db->from('category');
+//    $this->db->where($condition);
+//  $this->db->limit(1);
+                    $this->db->order_by("id", "asc");
+                    $query = $this->db->get();
+
+                    if ($query->num_rows() > 0) {
+
+                        $resultq1 = $query->result_array();
+                        $data['resultq1'] = $resultq1;
+                        $data['pos'] = 'buy_back_home';
+                        $data['active_order_id'] = '';
+
+
+
+                        $data = array(
+                            'content' => $this->load->view('pos/choose_menu_backhome', $data, true),
+                        );
+                    } else {
+                        $data = array(
+                            'content' => $this->load->view('pos/choose_menu_backhome', '', true),
+                        );
+                    }
+                } else {
+
+//แสดงหน้าเริ่มต้น
+                    $this->db->select('*');
+                    $this->db->from('category');
+//    $this->db->where($condition);
+//  $this->db->limit(1);
+                    $this->db->order_by("id", "asc");
+                    $query = $this->db->get();
+
+                    if ($query->num_rows() > 0) {
+
+                        $resultq1 = $query->result_array();
+                        $data['resultq1'] = $resultq1;
+                        $data['pos'] = 'buy_back_home';
+
+
+
+                        $data = array(
+                            'content' => $this->load->view('pos/index', $data, true),
+                        );
+                    } else {
+                        $data = array(
+                            'content' => $this->load->view('pos/index', '', true),
+                        );
+                    }
+                }
+            }
+        }
+
+        $this->load->view('main_layout', $data);
+    }
+
+    public function barista($id = '') {
+
+        if ($this->input->post('btn_submit') == 'add_queue') {
+
+
+            $active_order_id = $this->input->post('active_order_id');
+
+            if ($active_order_id != '') {
+//update item same order
+                $this->_update_order_backhome($active_order_id);
+                die();
+            } else {
+
+//add new item same order
+                $this->_new_order_backhome();
+                die();
+            }
+        } else {
+
+//มีการสั่งเพิ่ม update order
+            if ($this->input->post('active_order_id_selected_detail') != '') {
+
+
                 $this->db->select('*');
                 $this->db->from('category');
-                //    $this->db->where($condition);
-                //  $this->db->limit(1);
+//    $this->db->where($condition);
+//  $this->db->limit(1);
                 $this->db->order_by("id", "asc");
                 $query = $this->db->get();
 
@@ -291,16 +464,75 @@ class Pos extends CI_Controller {
                     $resultq1 = $query->result_array();
                     $data['resultq1'] = $resultq1;
                     $data['pos'] = 'buy_back_home';
+                    $data['active_order_id'] = $this->input->post('active_order_id_selected_detail');
 
 
 
                     $data = array(
-                        'content' => $this->load->view('pos/index', $data, true),
+                        'content' => $this->load->view('pos/choose_menu_backhome', $data, true),
                     );
                 } else {
                     $data = array(
-                        'content' => $this->load->view('pos/index', '', true),
+                        'content' => $this->load->view('pos/choose_menu_backhome', '', true),
                     );
+                }
+            } else {
+
+
+//ลูกค้าคนใหม่สั่ง New order
+                if ($this->input->post('buy_back_home') == 'new_to_go') {
+
+                    $this->db->select('*');
+                    $this->db->from('category');
+//    $this->db->where($condition);
+//  $this->db->limit(1);
+                    $this->db->order_by("id", "asc");
+                    $query = $this->db->get();
+
+                    if ($query->num_rows() > 0) {
+
+                        $resultq1 = $query->result_array();
+                        $data['resultq1'] = $resultq1;
+                        $data['pos'] = 'barista';
+                        $data['active_order_id'] = '';
+
+
+
+                        $data = array(
+                            'content' => $this->load->view('pos/choose_menu_backhome', $data, true),
+                        );
+                    } else {
+                        $data = array(
+                            'content' => $this->load->view('pos/choose_menu_backhome', '', true),
+                        );
+                    }
+                } else {
+
+
+//แสดงหน้าเริ่มต้น
+                    $this->db->select('*');
+                    $this->db->from('category');
+//    $this->db->where($condition);
+//  $this->db->limit(1);
+                    $this->db->order_by("id", "asc");
+                    $query = $this->db->get();
+
+                    if ($query->num_rows() > 0) {
+
+                        $resultq1 = $query->result_array();
+                        $data['resultq1'] = $resultq1;
+                        $data['pos'] = 'barista';
+
+
+
+                        $data = array(
+                            'content' => $this->load->view('pos/index', $data, true),
+                        );
+                    } else {
+                        $data = array(
+                            'content' => $this->load->view('pos/index', '', true),
+                        );
+                    }
                 }
             }
         }
@@ -310,12 +542,12 @@ class Pos extends CI_Controller {
 
     public function tables($id = '') {
 
-        //กินร้าน
+//กินร้าน
 
         if ($this->input->post('btn_submit') == 'add_to_table') {
-            //มีการสั่ง order
-            //เช็ค 
-           
+//มีการสั่ง order
+//เช็ค 
+
             $table_num = $this->input->post('tables_number');
             $this->db->select('*');
             $this->db->from('active_order');
@@ -323,27 +555,26 @@ class Pos extends CI_Controller {
             $this->db->where("paid_date = '0000-00-00 00:00:00'");
             $query = $this->db->get();
             if ($query->num_rows() == 1) {
-                //update
+//update
 
                 $active_order_id = $query->row_array()['id'];
 
                 $this->_update_order($active_order_id);
-                 die();
+                die();
             } else {
 
-                //add new
+//add new
                 $this->_new_order($table_num);
-                 die();
+                die();
             }
-           
         } else {
-             
+
             if ($this->input->post('tables_number') != '') {
 
                 $this->db->select('*');
                 $this->db->from('category');
-                //    $this->db->where($condition);
-                //  $this->db->limit(1);
+//    $this->db->where($condition);
+//  $this->db->limit(1);
                 $this->db->order_by("id", "asc");
                 $query = $this->db->get();
 
@@ -365,13 +596,13 @@ class Pos extends CI_Controller {
                     );
                 }
             } else {
-                
-            
+
+
 
                 $this->db->select('*');
                 $this->db->from('category');
-                //    $this->db->where($condition);
-                //  $this->db->limit(1);
+//    $this->db->where($condition);
+//  $this->db->limit(1);
                 $this->db->order_by("id", "asc");
                 $query = $this->db->get();
 
@@ -433,16 +664,120 @@ class Pos extends CI_Controller {
         $this->db->select("*");
         $this->db->from("active_order");
         $this->db->where("paid_date = '0000-00-00 00:00:00'");
-        // $this->db->order_by("product", "asc");
+// $this->db->order_by("product", "asc");
         $query = $this->db->get();
 
-        //  $arr = array();
+//  $arr = array();
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
 
                 $arr[] = $this->get_total_price_order($row['id'], $row['tables_number']);
             }
             echo json_encode($arr);
+        } else {
+            $arr = array();
+            echo json_encode($arr);
+        }
+    }
+
+    public function get_total_price_order($order_id = '', $tables_number = '') {
+
+        $total = 0;
+
+        $this->db->select('*');
+        $this->db->from('active_order_detail');
+        $this->db->where("active_order_id = " . $order_id);
+
+        $query = $this->db->get();
+
+        $qty = 0;
+        $finished_qty = 0;
+        $count_status = 0;
+
+        if ($query->num_rows() > 0) {
+            foreach ($query->result_array() as $row) {
+                $total = $total + ($row['qty'] * $row['price']);
+                $qty = $qty + $row['qty'];
+                $finished_qty = $finished_qty + $row['finished_qty'];
+
+                if ($row['status'] == 'กำลังทำ') {
+                    $count_status = $count_status + 1;
+                }
+            }
+            if ($qty > $finished_qty) {
+//ยังไม่เสร็จ
+                $status = '0';
+            } else {
+//เสร็จหมด
+                $status = '1';
+            }
+            $arr = array(
+                'active_order_id' => $order_id,
+                'tables_number' => $tables_number,
+                'total' => $total,
+                'num_rows' => $this->_get_main_numrows($order_id),
+                'last_update' => $this->get_last_update($order_id),
+                'total_qty' => $qty,
+                'status' => $status
+            );
+            return $arr;
+        } else {
+            $arr = array(
+                'active_order_id' => $order_id,
+                'tables_number' => $tables_number,
+                'total' => 0,
+                'num_rows' => 0,
+                'last_update' => '0000-00-00 00:00:00',
+                'total_qty' => 0,
+                'status' => $status
+            );
+            return $arr;
+        }
+    }
+
+    public function ajax_sum_main_table_backhome() {
+
+
+        $this->db->select("*");
+        $this->db->from("active_order");
+        $this->db->where("tables_number = 0");
+        $this->db->where("paid_date = '0000-00-00 00:00:00'");
+        $this->db->order_by("id", "asc");
+        $query = $this->db->get();
+
+//  $arr = array();
+        if ($query->num_rows() > 0) {
+            foreach ($query->result_array() as $row) {
+
+                $arr[] = $this->get_total_price_order($row['id'], $row['tables_number']);
+            }
+
+            echo json_encode($arr);
+            die();
+        } else {
+            $arr = array();
+            echo json_encode($arr);
+        }
+    }
+
+    public function ajax_sum_main_table_barista() {
+
+        $this->db->select("*");
+        $this->db->from("active_order");
+//  $this->db->where("tables_number = 0");
+// $this->db->where("paid_date = '0000-00-00 00:00:00'");
+        $this->db->order_by("id", "asc");
+        $query = $this->db->get();
+
+//  $arr = array();
+        if ($query->num_rows() > 0) {
+            foreach ($query->result_array() as $row) {
+
+                $arr[] = $this->get_total_price_order($row['id'], $row['tables_number']);
+            }
+
+            echo json_encode($arr);
+            die();
         } else {
             $arr = array();
             echo json_encode($arr);
@@ -457,10 +792,37 @@ class Pos extends CI_Controller {
         $this->db->from("active_order");
         $this->db->where("paid_date = '0000-00-00 00:00:00'");
         $this->db->where("tables_number = " . $tables_number);
-        // $this->db->order_by("product", "asc");
+// $this->db->order_by("product", "asc");
         $query = $this->db->get();
 
-        //  $arr = array();
+//  $arr = array();
+        if ($query->num_rows() > 0) {
+            $row = $query->row_array();
+            $active_order_id = $row['id'];
+            $tables_number = $row['tables_number'];
+            $created_at = $row['created_at'];
+
+            $arr = $this->get_list_order_menu($active_order_id, $tables_number, $created_at);
+
+            echo json_encode($arr);
+        } else {
+            $arr = array();
+            echo json_encode($arr);
+        }
+    }
+
+    public function ajax_sum_detail_table_backhome() {
+
+        $active_order_id_selected = $this->input->get('active_order_id_selected');
+
+        $this->db->select("*");
+        $this->db->from("active_order");
+//   $this->db->where("paid_date = '0000-00-00 00:00:00'");
+        $this->db->where("id = " . $active_order_id_selected);
+// $this->db->order_by("product", "asc");
+        $query = $this->db->get();
+
+//  $arr = array();
         if ($query->num_rows() > 0) {
             $row = $query->row_array();
             $active_order_id = $row['id'];
@@ -490,6 +852,21 @@ class Pos extends CI_Controller {
         }
     }
 
+    public function _get_main_numrows($active_order_id = '') {
+        $this->db->select('*');
+        $this->db->from('active_order');
+        $this->db->where("tables_number = 0");
+        $this->db->where("paid_date = '0000-00-00 00:00:00'");
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+
+            return $query->num_rows();
+        } else {
+            return '0';
+        }
+    }
+
     public function get_list_order_menu($active_order_id = '', $tables_number = '', $created_at = '') {
 
         $total_price = 0;
@@ -509,6 +886,7 @@ class Pos extends CI_Controller {
                 $total_qty = $total_qty + $row['qty'];
                 $total_price = $total_price + ( $row['price'] * $row['qty'] );
                 $arr[] = array(
+                    'id' => $row['id'],
                     'active_order_id' => $row['active_order_id'],
                     'menu_id' => $row['menu_id'],
                     'tables_number' => $tables_number,
@@ -518,15 +896,16 @@ class Pos extends CI_Controller {
                     'menu_type' => $this->_getMenuTypeEng($row['menu_type']),
                     'menu_type_eng' => $row['menu_type'],
                     'qty' => ($row['sum_qty']),
+                    'finished_qty' => $row['finished_qty'],
                     'price' => ($row['price']),
-                     'status' => ($row['status']),
+                    'status' => ($row['status']),
                     'total_price' => $this->get_total_price($active_order_id),
                     'total_qty' => $this->get_total_qty($active_order_id),
                     'last_update' => $this->get_last_update($active_order_id)
                 );
             }
-            //   $arr[] = [ 'total_qty' =>  $total_qty ];
-            // $arr[] = ['total_price' =>  $total_price];
+//   $arr[] = [ 'total_qty' =>  $total_qty ];
+// $arr[] = ['total_price' =>  $total_price];
 
 
 
@@ -539,7 +918,7 @@ class Pos extends CI_Controller {
     public function ajax_remove_items() {
 
         $this->db->trans_begin();
-        //  $arr = implode('-', $this->input->post('chkbox'));
+//  $arr = implode('-', $this->input->post('chkbox'));
 
         $active_order_id = $this->input->get('active_order_id');
         $menu_id = $this->input->get('menu_id');
@@ -549,7 +928,7 @@ class Pos extends CI_Controller {
         $this->db->where('menu_id', $menu_id);
         $this->db->where('menu_type', $menu_type);
         $this->db->delete('active_order_detail');
-        //check rollback
+//check rollback
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             echo 'remove error';
@@ -557,22 +936,21 @@ class Pos extends CI_Controller {
             $this->db->trans_complete();
             echo 'remove success';
         }
-
     }
-       public function ajax_clear_table() {
+
+    public function ajax_clear_table() {
 
         $this->db->trans_begin();
-        //  $arr = implode('-', $this->input->post('chkbox'));
-        
-     //   $this->db->get_where('rental', array('id' => $id))->row_array()['room_id'];
-        
+//  $arr = implode('-', $this->input->post('chkbox'));
+//   $this->db->get_where('rental', array('id' => $id))->row_array()['room_id'];
+
         $tables_number = $this->input->get('tables_number');
-       
+
         $this->db->where('tables_number', $tables_number);
         $this->db->where('paid_date', '0000-00-00 00:00:00');
         $this->db->delete('active_order');
-        
-        //check rollback
+
+//check rollback
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             echo 'remove error';
@@ -580,13 +958,55 @@ class Pos extends CI_Controller {
             $this->db->trans_complete();
             echo 'remove success';
         }
-
     }
-    
+
+    public function ajax_clear_backhome() {
+
+        $this->db->trans_begin();
+//  $arr = implode('-', $this->input->post('chkbox'));
+//   $this->db->get_where('rental', array('id' => $id))->row_array()['room_id'];
+
+        $active_order_id_selected = $this->input->get('active_order_id_selected');
+
+        $this->db->where('id', $active_order_id_selected);
+        $this->db->where('paid_date', '0000-00-00 00:00:00');
+        $this->db->delete('active_order');
+
+//check rollback
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            echo 'remove error';
+        } else {
+            $this->db->trans_complete();
+            echo 'remove success';
+        }
+    }
+
+    public function ajax_remove_item() {
+
+        $this->db->trans_begin();
+//  $arr = implode('-', $this->input->post('chkbox'));
+//   $this->db->get_where('rental', array('id' => $id))->row_array()['room_id'];
+
+        $item_id = $this->input->get('item_id');
+
+        $this->db->where('id', $item_id);
+        $this->db->delete('active_order_detail');
+
+//check rollback
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            echo 'remove error';
+        } else {
+            $this->db->trans_complete();
+            echo 'remove success';
+        }
+    }
+
     public function ajax_edit_items() {
 
         $this->db->trans_begin();
-        //  $arr = implode('-', $this->input->post('chkbox'));
+//  $arr = implode('-', $this->input->post('chkbox'));
 
         $active_order_id = $this->input->get('active_order_id');
         $menu_id = $this->input->get('menu_id');
@@ -596,8 +1016,8 @@ class Pos extends CI_Controller {
         $this->db->where('active_order_id', $active_order_id);
         $this->db->where('menu_id', $menu_id);
         $this->db->where('menu_type', $menu_type);
-        $this->db->update('active_order_detail',array('qty' => $qty, 'updated_at' => DATE_TIME));
-        //check rollback
+        $this->db->update('active_order_detail', array('qty' => $qty, 'updated_at' => DATE_TIME));
+//check rollback
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             echo 'edit error';
@@ -605,69 +1025,125 @@ class Pos extends CI_Controller {
             $this->db->trans_complete();
             echo 'edit success';
         }
-
     }
-        public function ajax_pay_cash() {
+
+    public function ajax_pay_cash() {
 
         $this->db->trans_begin();
-        //  $arr = implode('-', $this->input->post('chkbox'));
-        
-        
-        
+//  $arr = implode('-', $this->input->post('chkbox'));
+
         $tables_number = $this->input->get('tables_number');
-        
-        $order_id = $this->db->get_where('active_order', array('tables_number' => $tables_number ,'paid_date' =>  '0000-00-00 00:00:00'))->row_array()['id'];
-        
-     
+
+        $order_id = $this->db->get_where('active_order', array('tables_number' => $tables_number, 'paid_date' => '0000-00-00 00:00:00'))->row_array()['id'];
+
+
 
         $this->db->where('tables_number', $tables_number);
         $this->db->where('paid_date', '0000-00-00 00:00:00');
-     
-        $this->db->update('active_order',array('paid_date' => DATE_TIME, 'updated_at' => DATE_TIME, 'cashier_id' => $this->session->userdata('users_id')));
-        //check rollback
+
+        $this->db->update('active_order', array('paid_date' => DATE_TIME, 'updated_at' => DATE_TIME, 'cashier_id' => $this->session->userdata('users_id')));
+//check rollback
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             echo 'error';
             $arr = array(
                 'status' => 'error',
-                'order_id' => $order_id 
+                'order_id' => $order_id
             );
-              echo json_encode($arr);
+            echo json_encode($arr);
         } else {
             $this->db->trans_complete();
-             $arr = array(
+            $arr = array(
                 'status' => 'success',
-                'order_id' => $order_id 
+                'order_id' => $order_id
             );
             echo json_encode($arr);
         }
-
     }
 
+    public function ajax_check_finished() {
+//เปลี่ยนสถานะเมื่อทำเสร็จแล้ว
+        $this->db->trans_begin();
+//  $arr = implode('-', $this->input->post('chkbox'));
 
+        $order_detail_id = $this->input->get('order_detail_id');
 
-    public function get_total_price_order($order_id = '', $tables_number = '') {
+        $status = $this->db->get_where('active_order_detail', array('id' => $order_detail_id))->row_array()['status'];
+        $qty = $this->db->get_where('active_order_detail', array('id' => $order_detail_id))->row_array()['qty'];
+        if ($status == 'ทำเสร็จแล้ว') {
+            $_status = 'กำลังทำ';
+        } else {
+            $_status = 'ทำเสร็จแล้ว';
+        }
 
-        $total = 0;
+        $this->db->where('id', $order_detail_id);
+        $this->db->update('active_order_detail', array('status' => $_status, 'finished_qty' => $qty, 'updated_at' => DATE_TIME, 'barista_id' => $this->session->userdata('users_id')));
+
+//check rollback
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+        } else {
+            $this->db->trans_complete();
+        }
+    }
+
+    public function ajax_check_all_finished() {
+//เปลี่ยนสถานะเมื่อทำเสร็จแล้ว
+        $this->db->trans_begin();
+
+        $active_order_id_selected = $this->input->get('active_order_id_selected');
 
         $this->db->select('*');
         $this->db->from('active_order_detail');
-        $this->db->where("active_order_id = " . $order_id);
-
+        $this->db->where("active_order_id = " . $active_order_id_selected);
         $query = $this->db->get();
 
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $total = $total + ($row['qty'] * $row['price']);
+                  $this->db->where('id', $row['id']);
+                 $this->db->update('active_order_detail', array('finished_qty' => $row['qty'], 'updated_at' => DATE_TIME, 'barista_id' => $this->session->userdata('users_id')));
+
             }
-            $arr = array(
-                'tables_number' => $tables_number,
-                'total' => $total
-            );
-            return $arr;
+        }
+
+    
+
+//check rollback
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
         } else {
-            return '';
+            $this->db->trans_complete();
+        }
+    }
+
+    public function ajax_pay_cash_backhome() {
+
+        $this->db->trans_begin();
+
+        $active_order_id = $this->input->get('active_order_id');
+
+//  $order_id = $this->db->get_where('active_order', array('id' => $active_order_id, 'paid_date' => '0000-00-00 00:00:00'))->row_array()['id'];
+
+        $this->db->where('id', $active_order_id);
+        $this->db->where('paid_date', '0000-00-00 00:00:00');
+        $this->db->update('active_order', array('paid_date' => DATE_TIME, 'updated_at' => DATE_TIME, 'cashier_id' => $this->session->userdata('users_id')));
+//check rollback
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            echo 'error';
+            $arr = array(
+                'status' => 'error',
+                'order_id' => $active_order_id
+            );
+            echo json_encode($arr);
+        } else {
+            $this->db->trans_complete();
+            $arr = array(
+                'status' => 'success',
+                'order_id' => $active_order_id
+            );
+            echo json_encode($arr);
         }
     }
 
@@ -739,11 +1215,11 @@ class Pos extends CI_Controller {
     }
 
     public function buy_back_homes($id = '') {
-        //ซื้อกลับบ้าน
+//ซื้อกลับบ้าน
         $this->db->select('*');
         $this->db->from('category');
-        //    $this->db->where($condition);
-        //  $this->db->limit(1);
+//    $this->db->where($condition);
+//  $this->db->limit(1);
         $this->db->order_by("id", "asc");
         $query = $this->db->get();
 
@@ -854,7 +1330,7 @@ class Pos extends CI_Controller {
             }
         } else {
 
-            //Option ภายในห้อง
+//Option ภายในห้อง
             $this->db->select('*');
             $this->db->from('category');
             $this->db->order_by("id", "asc");
@@ -881,7 +1357,7 @@ class Pos extends CI_Controller {
     public function delete($id = '') {
 
         if ($this->input->post('btn_submit') == 'ลบที่เลือก') {
-            //  $arr = implode('-', $this->input->post('chkbox'));
+//  $arr = implode('-', $this->input->post('chkbox'));
 
             foreach ($this->input->post('chkbox') as $ids) {
                 $this->db->where('id', $ids);
