@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Seat extends CI_Controller {
+class Category extends CI_Controller {
 
     /**
      * Index Page for this controller.
@@ -28,8 +28,7 @@ class Seat extends CI_Controller {
             $this->session->set_userdata('url_back', current_url());
             redirect('auth/login');
         }
-        
-      if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
+          if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
             redirect('404');
         }
     }
@@ -37,10 +36,8 @@ class Seat extends CI_Controller {
     public function index() {
 
 
-        //$condition = "username =" . "'" . $data['username'] . "' AND " . "password =" . "'" . $data['password'] . "'";
-
         $this->db->select('*');
-        $this->db->from('seat');
+        $this->db->from('category');
         //    $this->db->where($condition);
         //  $this->db->limit(1);
         $this->db->order_by("id", "asc");
@@ -53,18 +50,18 @@ class Seat extends CI_Controller {
 
 
             $data = array(
-                'content' => $this->load->view('seat/index', $data, true),
+                'content' => $this->load->view('category/index', $data, true),
             );
         } else {
             $data = array(
-                'content' => $this->load->view('seat/index', '', true),
+                'content' => $this->load->view('category/index', '', true),
             );
         }
 
         $this->load->view('main_layout', $data);
     }
 
-    public function edit() {
+    public function edit($id) {
 
         if ($this->input->post('btn_submit') == 'บันทึก' || $this->input->post('btn_submit') == 'บันทึกและแก้ไขต่อ') {
 
@@ -74,26 +71,28 @@ class Seat extends CI_Controller {
                 $redirect = false;
             }
 
-            $dataUpdate = array(
-                'seat_number' => $this->input->post('seat_number'),
+            $dataInsert = array(
+                'category_name' => $this->input->post('category_name'),
+              //  'status' => $this->input->post('status'),
+                'created_at' => DATE_TIME,
                 'updated_at' => DATE_TIME,
             );
 
-            $this->db->where('id', 1);
-            if ($this->db->update('seat', $dataUpdate)) {
+            $this->db->where('id', $id);
+            if ($this->db->update('category', $dataInsert)) {
 
                 $this->session->set_flashdata('message_success', 'แก้ไขข้อมูลแล้ว');
                 if ($redirect) {
-                    redirect('seat');
+                    redirect('category');
                 } else {
 
-                    redirect('seat/edit/' . $id);
+                    redirect('category/edit/' . $id);
                 }
             }
         } else {
             $this->db->select('*');
-            $this->db->from('seat');
-            $this->db->where('id = ' . 1);
+            $this->db->from('category');
+            $this->db->where('id = ' . $id);
             $this->db->limit(1);
             $this->db->order_by("id", "asc");
             $query = $this->db->get();
@@ -104,17 +103,17 @@ class Seat extends CI_Controller {
 
                 $dataEdit = array(
                     'id' => $row['id'],
-                    'res_seat' => $row,
+                    'res_category' => $row,
                 );
 
 
                 $data = array(
-                    'content' => $this->load->view('seat/edit', $dataEdit, true),
+                    'content' => $this->load->view('category/edit', $dataEdit, true),
                 );
                 $this->load->view('main_layout', $data);
             } else {
                 $data = array(
-                    'content' => $this->load->view('seat/index', '', true),
+                    'content' => $this->load->view('category/index', '', true),
                 );
             }
         }
@@ -132,27 +131,26 @@ class Seat extends CI_Controller {
 
 
             $dataInsert = array(
-                'name' => $this->input->post('name'),
-            
-                'status' => $this->input->post('status'),
+                'category_name' => $this->input->post('category_name'),
+              //  'status' => $this->input->post('status'),
                 'created_at' => DATE_TIME,
                 'updated_at' => DATE_TIME,
             );
 
-            if ($this->db->insert('seat', $dataInsert)) {
+            if ($this->db->insert('category', $dataInsert)) {
                 $this->session->set_flashdata('message_success', 'เพิ่มข้อมูลแล้ว');
                 if ($redirect) {
-                    redirect('seat');
+                    redirect('category');
                 } else {
                     $insert_id = $this->db->insert_id();
-                    redirect('seat/edit/' . $insert_id);
+                    redirect('category/edit/' . $insert_id);
                 }
             }
         } else {
 
             //Option ภายในห้อง
             $this->db->select('*');
-            $this->db->from('seat');
+            $this->db->from('category');
             $this->db->order_by("id", "asc");
             $query = $this->db->get();
             if ($query->num_rows() > 0) {
@@ -162,12 +160,12 @@ class Seat extends CI_Controller {
 
 
                 $data = array(
-                    'content' => $this->load->view('seat/add', $data_q, true),
+                    'content' => $this->load->view('category/add', $data_q, true),
                 );
                 $this->load->view('main_layout', $data);
             } else {
                 $data = array(
-                    'content' => $this->load->view('seat/add', '', true),
+                    'content' => $this->load->view('category/add', '', true),
                 );
                 $this->load->view('main_layout', $data);
             }
@@ -181,17 +179,15 @@ class Seat extends CI_Controller {
 
             foreach ($this->input->post('chkbox') as $ids) {
                 $this->db->where('id', $ids);
-                $this->db->delete('seat');
+                $this->db->delete('category');
             }
             $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
-            redirect('seat');
-            
+            redirect('category');
         } else {
-            
-            if ($this->db->delete('seat', array('id' => $id))) {
+
+            if ($this->db->delete('category', array('id' => $id))) {
                 $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
-                redirect('seat');
-                
+                redirect('category');
             }
         }
     }

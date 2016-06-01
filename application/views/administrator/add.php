@@ -45,8 +45,15 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">ข้อมูล</h3>
                 </div>
-                <form class="form-horizontal" action="<?= base_url('administrator/add') ?>" method="POST">
+                <form class="form-horizontal"  enctype="multipart/form-data"  action="<?= base_url('administrator/add') ?>" method="POST">
+              
                     <div class="box-body">
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">Image</label>
+                            <div class="col-sm-10">
+                                <input type="file"  class="form-control"  name="image" data-validation="" >
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-2 control-label">Username</label>
                             <div class="col-sm-10">
@@ -56,7 +63,7 @@
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
                             <div class="col-sm-10">
-                                <input type="text" value="<?php echo set_value('password'); ?>" class="form-control"  name="password" data-validation="required" >
+                                <input type="password" value="" class="form-control"  name="password" data-validation="required" >
                             </div>
                         </div>
                         <div class="form-group">
@@ -65,7 +72,7 @@
                                 <input type="text" value="<?php echo set_value('name'); ?>" class="form-control"  name="name" data-validation="required" >
                             </div>
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label for="inputEmail3" class="col-sm-2 control-label">เบอร์โทร</label>
                             <div class="col-sm-10">
                                 <input type="text" value="<?php echo set_value('tel'); ?>" class="form-control"  name="tel" data-validation="required,number" >
@@ -74,7 +81,7 @@
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-2 control-label">ที่อยู่</label>
                             <div class="col-sm-10">
-                          
+
                                 <textarea name="address" class="form-control" rows="5"><?php echo set_value('address'); ?></textarea>
                             </div>
                         </div>
@@ -86,40 +93,22 @@
                                     $getStatus = field_enums('users', 'position');
                                     $i = 1;
                                     foreach ($getStatus as $value) {
-                                        ?>
-                                        <li>
-                                            <input type="radio" name="position" id="position" value="<?php echo $value ?>" <?= $i == 1 ? 'checked' : '' ?>  data-validation="required"/>
-                                            <label for="position"><?php echo $value ?></label>
-                                        </li>
-                                        <?php
-                                        $i++;
+                                        if ($value != 'ผู้ดูแลระบบ') {
+                                            ?>
+                                            <li>
+                                                <input type="radio" name="position" id="position" value="<?php echo $value ?>" <?= $i == 1 ? 'checked' : '' ?>  data-validation="required"/>
+                                                <label for="position"><?php echo $value ?></label>
+                                            </li>
+                                            <?php
+                                            $i++;
+                                        }
                                     }
                                     ?>
                                 </ul>
 
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="inputPassword3" class="col-sm-2 control-label">สถานะ</label>
-                            <div class="col-sm-10">
-                                <ul class="" style="list-style: none;padding-left: 0;">
-                                    <?php
-                                    $getStatus = field_enums('users', 'status');
-                                    $i = 1;
-                                    foreach ($getStatus as $value) {
-                                        ?>
-                                        <li>
-                                            <input type="radio" name="status" id="status" value="<?php echo $value ?>" <?= $i == 1 ? 'checked' : '' ?>  data-validation="required"/>
-                                            <label><?php echo $value ?></label>
-                                        </li>
-                                        <?php
-                                        $i++;
-                                    }
-                                    ?>
-                                </ul>
 
-                            </div>
-                        </div>
 
 
                     </div><!-- /.box-body -->

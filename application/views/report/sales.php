@@ -126,7 +126,7 @@
                                         foreach ($res_active_order_sales as $key => $row) {
 
                                             // $date = ShowDateTh2($row['formatted_date']);
-                                            // $total_sales = $total_sales + $row['total_price'];
+                                           $total_sales = $total_sales + $row['total_price'];
                                             if ($row['menu_type'] == 'iced') {
                                                 $menu_type = 'เย็น';
                                             }
@@ -146,8 +146,8 @@
 
                                             </tr>
                                         <?php } ?>
-                                        <tr class="bg-green-active hidden">
-                                            <td colspan="1" class="text-right">รวมทั้งหมด</td>
+                                        <tr class="">
+                                            <td colspan="3" class="text-right">รวมทั้งหมด</td>
                                             <td >฿ <?= $total_sales ?></td>
                                         </tr>
 
@@ -186,7 +186,7 @@
 <script src="<?= base_url() ?>assets/plugins/datatable2/semantic.min.js"></script>
 
 <!-- date-range-picker -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+<script src="<?= base_url() ?>assets/js/moment.min.js"></script>
 <script src="<?= base_url() ?>assets/plugins/daterangepicker/daterangepicker.js"></script>
 
 <style>
@@ -208,57 +208,36 @@
             $('.chkbox').prop('checked', this.checked);
         });
 
-        $('#reservation').daterangepicker(
+        $('#reservations').daterangepicker(
                 {
                     locale: {
-                        format: 'DD-MM-YYYY'
+                        format: 'D-M-YYYY'
                     },
                 },
                 function (start, end, label) {
-                    $('#date_start').val(start.format('YYYY-MM-DD') + " 00:00:00");
-                    $('#date_end').val(end.format('YYYY-MM-DD') + " 23:59:59");
-                    $("#reservation").val(start.format('DD/MM/YYYY') + ' to ' + end.format('DD/MM/YYYY'));
+                  //  $('#date_start').val(start.format('YYYY-M-D') + " 00:00:00");
+                   // $('#date_end').val(end.format('YYYY-M-D') + " 23:59:59");
+                  // alert(start.format('DD/MM/YYYY'));
+                   $("#reservation").val(start.format('DD/MM/YYYY') + '-' + end.format('DD/MM/YYYY'));
 
                     //   alert("A new date range was chosen: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
                 });
-
-        //date start
-        $('#datepicker1').datepicker({
-            format: 'yyyy-mm-d',
-            todayHighlight: true,
-            language: 'th',
-            //  minViewMode: 'months',
-        });
-        $('#datepicker1').on("changeDate", function () {
-            $('#my_hidden_input1').val(
-                    $('#datepicker1').datepicker('getFormattedDate')
-                    );
-        });
-        $('#my_hidden_input1').val(
-                $('#datepicker1').datepicker('getFormattedDate')
-                );
-
-//date end
-        $('#datepicker2').datepicker({
-            format: 'yyyy-mm',
-            todayHighlight: true,
-            language: 'th',
-            minViewMode: 'months',
-        });
-        $('#datepicker2').on("changeDate", function () {
-            $('#my_hidden_input2').val(
-                    $('#datepicker2').datepicker('getFormattedDate')
-                    );
-        });
-        $('#my_hidden_input2').val(
-                $('#datepicker2').datepicker('getFormattedDate')
-                );
-
 
 
 
     });
 
+$('#reservation').daterangepicker(
+{
+    locale: {
+      format: 'YYYY-MM-DD'
+    }
+   // startDate: '2013-01-01',
+   // endDate: '2013-12-31'
+}, 
+function(start, end, label) {
+   // alert("A new date range was chosen: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+});
 
 
 

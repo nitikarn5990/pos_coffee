@@ -1,7 +1,7 @@
  
 <section class="content-header">
     <h1>
-        แก้ไขข้อมูลสินค้า
+       เพิ่ม Topping
 
     </h1>
     <ol class="breadcrumb hidden">
@@ -51,20 +51,27 @@
                     <h3 class="box-title">ข้อมูล</h3>
                 </div><!-- /.box-header -->
                 <!-- form start -->
-                <form class="form-horizontal" action="<?= base_url('category/edit/'.$id) ?>" method="POST">
+                <form class="form-horizontal" action="<?= base_url('topping/add') ?>" method="POST">
                     <div class="box-body">
-                       <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label">ชื่อหมวดหมู่</label>
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">Topping</label>
                             <div class="col-sm-10">
-                                <input type="text" value="<?php echo $res_category['category_name']; ?>" class="form-control"  name="category_name" data-validation="required" >
+                                <input type="text" value="" class="form-control"  name="topping_name" data-validation="required" >
                             </div>
                         </div>
-                     
+                         <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">ราคา</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="" class="form-control"  name="price" data-validation="required,number" >
+                            </div>
+                        </div>
+               
+
 
 
                     </div><!-- /.box-body -->
                     <div class="box-footer">
-                 <button type="submit" name="btn_submit" value="บันทึกและแก้ไขต่อ" class="btn btn-success pull-right margin-r-5"><i class="fa fa-save"></i> บันทึกและแก้ไขต่อ</button>
+                        <button type="submit" name="btn_submit" value="บันทึกและแก้ไขต่อ" class="btn btn-success pull-right margin-r-5"><i class="fa fa-save"></i> บันทึกและแก้ไขต่อ</button>
                         <button type="submit" name="btn_submit" value="บันทึก" class="btn btn-info pull-right margin-r-5"><i class="fa fa-save"></i> บันทึก</button>&nbsp;&nbsp;
 
                     </div><!-- /.box-footer -->
@@ -74,7 +81,18 @@
         </div><!--/.col (right) -->
     </div>
 </section><!-- /.content -->
+
 <!-- Validate -->
 
 <script src="<?= base_url() ?>assets/plugins/validate/jquery.form-validator.min.js"></script>
 <script> $.validate();</script>
+
+
+<script src="<?= base_url() ?>assets/plugins/switch/js/on-off-switch.js"></script>
+<script src="<?= base_url() ?>assets/plugins/switch/js/on-off-switch-onload.js"></script>
+<link rel="stylesheet" href="<?= base_url() ?>assets/plugins/switch/css/on-off-switch.css">
+<script>
+
+
+</script>
+

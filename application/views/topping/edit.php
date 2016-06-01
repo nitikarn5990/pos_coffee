@@ -1,7 +1,7 @@
  
 <section class="content-header">
     <h1>
-        แก้ไขข้อมูลสินค้า
+        แก้ไข Topping
 
     </h1>
     <ol class="breadcrumb hidden">
@@ -51,12 +51,18 @@
                     <h3 class="box-title">ข้อมูล</h3>
                 </div><!-- /.box-header -->
                 <!-- form start -->
-                <form class="form-horizontal" action="<?= base_url('category/edit/'.$id) ?>" method="POST">
+                <form class="form-horizontal" action="<?= base_url('topping/edit/'.$id) ?>" method="POST">
                     <div class="box-body">
                        <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label">ชื่อหมวดหมู่</label>
+                            <label for="inputEmail3" class="col-sm-2 control-label">Topping</label>
                             <div class="col-sm-10">
-                                <input type="text" value="<?php echo $res_category['category_name']; ?>" class="form-control"  name="category_name" data-validation="required" >
+                                <input type="text" value="<?php echo $res_topping['topping_name']; ?>" class="form-control"  name="topping_name" data-validation="required" >
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">ราคา</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="<?php echo $res_topping['price']; ?>" class="form-control"  name="price" data-validation="required,number" >
                             </div>
                         </div>
                      

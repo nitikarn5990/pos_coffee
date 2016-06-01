@@ -60,27 +60,6 @@
                             </div>
                         </div>
                
-                        <div class="form-group">
-                            <label for="inputPassword3" class="col-sm-2 control-label">สถานะ</label>
-                            <div class="col-sm-10">
-                                <ul class="" style="list-style: none;padding-left: 0;">
-                                    <?php
-                                    $getStatus = field_enums('category', 'status');
-                                    $i = 1;
-                                    foreach ($getStatus as $value) {
-                                        ?>
-                                        <li>
-                                            <input type="radio" name="status" id="status" value="<?php echo $value ?>" <?= $i == 1 ? 'checked' : '' ?>  data-validation="required"/>
-                                            <label><?php echo $value ?></label>
-                                        </li>
-                                        <?php
-                                        $i++;
-                                    }
-                                    ?>
-                                </ul>
-
-                            </div>
-                        </div>
 
 
 

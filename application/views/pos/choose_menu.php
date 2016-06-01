@@ -57,8 +57,8 @@
                                         <th  style="width: 100px" class="text-center">Qty</th>
                                         <th  class="text-left">Product</th>
 
-                                        <th style="width: 60px" class="text-right">Total</th>
-                                        <th style="width: 60px" class="text-right">ลบ</th>
+                                        <th style="width: 100px" class="text-right">Total</th>
+                                        <th style="width: 30px" class="text-right">ลบ</th>
                                         </thead>
                                         <tbody>
 

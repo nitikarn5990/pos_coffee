@@ -54,15 +54,18 @@
 
         <link rel="stylesheet" type="text/css" href="<?= base_url() ?>assets/plugins/popr/popr.css">
         <script type="text/javascript" src="<?= base_url() ?>assets/plugins/popr/popr.js"></script>
-        
+
 
     </head>
     <body class="sidebar-mini sidebar-collapse skin-purple ">
+        <?php
+        $user_image = $this->db->get_where('users', array('id' => $this->session->userdata('users_id')))->row_array()['image'];
+        ?>
         <div class="wrapper"> 
 
             <header class="main-header">
                 <!-- Logo -->
-                <a href="index2.html" class="logo">
+                <a href="#" class="logo">
                     <!-- mini logo for sidebar mini 50x50 pixels -->
                     <span class="logo-mini"><b>ระบบจัดการร้านกาแฟ</b></span>
                     <!-- logo for regular state and mobile devices -->
@@ -266,13 +269,14 @@
                             <!-- User Account: style can be found in dropdown.less -->
                             <li class="dropdown user user-menu ">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <img src="<?= base_url() ?>assets/dist/img/default_user.png" class="user-image" alt="User Image">
+
+                                    <img src="<?= base_url('uploads/' . $user_image) ?>" class="user-image" alt="User Image">
                                     <span class="hidden-xs"><?= $this->session->userdata('name') ?></span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <!-- User image -->
                                     <li class="user-header">
-                                        <img src="<?= base_url() ?>assets/dist/img/default_user.png" class="img-circle" alt="User Image">
+                                        <img src="<?= base_url('uploads/' . $user_image) ?>" class="img-circle" alt="User Image">
                                         <p>
                                             <?= $this->session->userdata('name') ?>
                                             <small>หน้าที่ : <?= $this->session->userdata('group') == 'super admin' ? 'super administrator' : $this->session->userdata('position') ?></small>
@@ -293,10 +297,10 @@
                                     <!-- Menu Footer-->
                                     <li class="user-footer">
                                         <div class="pull-left">
-                                            <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                            <a href="<?= base_url('profile/edit') ?>" class="btn btn-default btn-flat">Profile</a>
                                         </div>
                                         <div class="pull-right">
-                                            <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                            <a href="<?= base_url('auth/logout') ?>" class="btn btn-default btn-flat">Sign out</a>
                                         </div>
                                     </li>
                                 </ul>
@@ -316,7 +320,7 @@
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <img src="<?= base_url() ?>assets/dist/img/default_user.png" class="img-circle" alt="User Image">
+                            <img src="<?= base_url('uploads/' . $user_image) ?>" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
                             <p><?= $this->session->userdata('name') ?></p>
@@ -324,14 +328,7 @@
                         </div>
                     </div>
                     <!-- search form -->
-                    <form action="#" method="get" class="sidebar-form">
-                        <div class="input-group">
-                            <input type="text" name="q" class="form-control" placeholder="Search...">
-                            <span class="input-group-btn">
-                                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-                            </span>
-                        </div>
-                    </form>
+
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
@@ -347,7 +344,7 @@
             <div class="content-wrapper" style="background-color: white;">
                 <?= isset($content) ? ($content) : '' ?>
             </div><!-- /.content-wrapper -->
-            <footer class="main-footer">
+            <footer class="main-footer hidden">
                 <div class="pull-right hidden-xs">
                     <b>Version</b> 2.3.0
                 </div>
@@ -355,7 +352,7 @@
             </footer>
 
             <!-- Control Sidebar -->
-            <aside class="control-sidebar control-sidebar-dark">
+            <aside class="control-sidebar control-sidebar-dark hidden">
                 <!-- Create the tabs -->
                 <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
                     <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
@@ -547,12 +544,14 @@
 
         <script src="<?= base_url() ?>assets/plugins/datatable2/jquery.dataTables.min.js"></script>
         <script src="<?= base_url() ?>assets/dataTables.bootstrap.min.js"></script>
-          <script src=" http://malsup.github.io/jquery.blockUI.js"></script>
-       
+        <script src="<?= base_url() ?>assets/js/jquery.blockUI.js"></script>
+
         <script>
-                    $('document').ready(function () {
-                        $('body').removeClass('skin-yellow').addClass('skin-purple');
-                    });
+            var num_rows = 0;
+            var chk_dup = 0;
+            $('document').ready(function () {
+                $('body').removeClass('skin-yellow').addClass('skin-purple');
+            });
         </script>
 
         <style>
@@ -567,7 +566,69 @@
             #list-menu table i, table tbody tr{
                 cursor: pointer;
             }
+
+            table {
+                font-size: 12px !important;
+            }
+            #category_child:focus{
+                background-color: red;
+            }
+            .topping-title{
+                font-style: italic;
+                font-size: 14px;
+            }
+            ul{
+                list-style-type: none;
+                padding-left: 10px;
+            }
+            .todo-list > li{
+                padding: 5px;
+            }
+            #selecting-topping-list > li{
+                margin-bottom: 5px;
+            }
+
+
         </style>
 
+        <!-- modal for topping -->
+        <div class="modal fade" id="modal-topping" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header hidden">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="menu-name">menu-name</h4>
+                                <h4>Base price : <span class="menu-price">50</span></h4>
+
+
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul id="selecting-topping-list">
+                                   
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="todo-list" id="topping-list">
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer" >
+                        <input type="hidden" id="index_selected" value="">
+                        <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">ยกเลิก</button>
+                        <button type="button" class="btn btn-flat btn-success" onclick="save()">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

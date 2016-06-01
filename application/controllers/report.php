@@ -28,22 +28,24 @@ class report extends CI_Controller {
             $this->session->set_userdata('url_back', current_url());
             redirect('auth/login');
         }
+        if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
+            redirect('404');
+        }
     }
 
     public function index() {
 
-     
+
         redirect('report/sales');
     }
-
 
     public function sales() {
 
 
         if ($this->input->post('btn_submit') == 'ค้นหา') {
 
-            
-        
+
+
             if ($this->input->post('report_type') == 'ยอดขาย') {
 
 
@@ -53,8 +55,16 @@ class report extends CI_Controller {
                 $this->db->join('active_order_detail', 'active_order.id = active_order_detail.active_order_id');
 
                 //  $this->db->join('member', 'active_rent.member_id = member.id');
-                $start_date = trim($this->input->post('date_start'));
-                $end_date = trim($this->input->post('date_end'));
+
+
+                $arrDate = explode(' - ', $this->input->post('reservation'));
+                $arrDateSt = explode('/', $arrDate[0]);
+                $arrDateEnd = explode('/', $arrDate[1]);
+                $start_date = $arrDateSt[2] . '-' . $arrDateSt[0] . '-' . $arrDateSt[1] . ' ' . ' 00:00:00';
+                $end_date = $arrDateEnd[2] . '-' . $arrDateEnd[0] . '-' . $arrDateEnd[1] . ' ' . ' 23:59:59';
+
+                // print_r($start_date);
+                // die();
 
                 if (trim($start_date) != '' && trim($end_date) != '') {
 
@@ -93,15 +103,20 @@ class report extends CI_Controller {
                 $this->db->join('menu', 'active_order_detail.menu_id = menu.id');
 
                 //  $this->db->join('member', 'active_rent.member_id = member.id');
-                $start_date = trim($this->input->post('date_start'));
-                $end_date = trim($this->input->post('date_end'));
+
+                $arrDate = explode(' - ', $this->input->post('reservation'));
+                $arrDateSt = explode('/', $arrDate[0]);
+                $arrDateEnd = explode('/', $arrDate[1]);
+                $start_date = $arrDateSt[2] . '-' . $arrDateSt[0] . '-' . $arrDateSt[1] . ' ' . ' 00:00:00';
+                $end_date = $arrDateEnd[2] . '-' . $arrDateEnd[0] . '-' . $arrDateEnd[1] . ' ' . ' 23:59:59';
+
 
                 if (trim($start_date) != '' && trim($end_date) != '') {
 
                     $this->db->where('active_order.created_at BETWEEN "' . $start_date . '" and "' . $end_date . '"');
                     $this->db->group_by('active_order_detail.menu_id');
                     $this->db->group_by('active_order_detail.menu_type');
-                    $this->db->order_by('active_order_detail.menu_id', 'ASC');
+                    $this->db->order_by('menu.product', 'ASC');
                     $this->db->order_by('active_order_detail.menu_type', 'ASC');
 
                     // echo $this->db->get_compiled_select();
@@ -147,7 +162,5 @@ class report extends CI_Controller {
             $this->load->view('main_layout', $data);
         }
     }
-
-   
 
 }

@@ -22,19 +22,23 @@ class Auth extends CI_Controller {
     public function __construct() {
         parent::__construct();
         // Your own constructor code
+
+        
+      
+        
     }
 
     public $data = array();
     public $template = array();
 
     public function _checkauth() {
+        
+        
 
         if (($this->session->userdata('is_logged_in') != '')) {
             if ($this->session->userdata('url_back') != '') {
-                redirect($this->session->userdata('url_back'));
-            } else {
-                redirect('home');
-            }
+              //  redirect($this->session->userdata('url_back'));
+            } 
         }
     }
 
@@ -80,11 +84,25 @@ class Auth extends CI_Controller {
                 $this->session->set_userdata('group', $row['group']);
                 $this->session->set_userdata('position', $row['position']);
                 
-                if ($this->session->userdata('url_back') != '') {
-                    redirect($this->session->userdata('url_back'));
-                } else {
-                    redirect('home');
-                }
+              //  if ($this->session->userdata('url_back') != '') {
+                 // redirect($this->session->userdata('url_back'));
+               // } else {
+              
+                 
+                    if($row['position'] == 'แคชเชียร์'){
+                           redirect('pos/tables');
+                    }
+                     if($row['position'] == 'พนักงานเสิร์ฟ'){
+                             redirect('pos/tables');
+                    }
+                     if($row['position'] == 'คนชงกาแฟ'){
+                          redirect('pos/barista');
+                   }
+                    if($row['position'] == 'ผู้ดูแลระบบ'){
+                         redirect('home');
+                    }
+                  
+                //}
 
                 //redirect($this->agent->referrer());
                 // redirect('member/add');

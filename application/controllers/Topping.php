@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Seat extends CI_Controller {
+class Topping extends CI_Controller {
 
     /**
      * Index Page for this controller.
@@ -28,8 +28,7 @@ class Seat extends CI_Controller {
             $this->session->set_userdata('url_back', current_url());
             redirect('auth/login');
         }
-        
-      if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
+        if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
             redirect('404');
         }
     }
@@ -37,10 +36,8 @@ class Seat extends CI_Controller {
     public function index() {
 
 
-        //$condition = "username =" . "'" . $data['username'] . "' AND " . "password =" . "'" . $data['password'] . "'";
-
         $this->db->select('*');
-        $this->db->from('seat');
+        $this->db->from('topping');
         //    $this->db->where($condition);
         //  $this->db->limit(1);
         $this->db->order_by("id", "asc");
@@ -53,18 +50,33 @@ class Seat extends CI_Controller {
 
 
             $data = array(
-                'content' => $this->load->view('seat/index', $data, true),
+                'content' => $this->load->view('topping/index', $data, true),
             );
         } else {
             $data = array(
-                'content' => $this->load->view('seat/index', '', true),
+                'content' => $this->load->view('topping/index', '', true),
             );
         }
 
         $this->load->view('main_layout', $data);
     }
 
-    public function edit() {
+    public function check_duplicate($name) {
+
+        $this->db->select('*');
+        $this->db->from('topping');
+        $this->db->where("topping_name = '" . $name . "'");
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+
+            return false;
+        } else {
+
+            return true;
+        }
+    }
+
+    public function edit($id) {
 
         if ($this->input->post('btn_submit') == 'บันทึก' || $this->input->post('btn_submit') == 'บันทึกและแก้ไขต่อ') {
 
@@ -74,26 +86,27 @@ class Seat extends CI_Controller {
                 $redirect = false;
             }
 
-            $dataUpdate = array(
-                'seat_number' => $this->input->post('seat_number'),
+            $dataInsert = array(
+                'topping_name' => $this->input->post('topping_name'),
+                'price' => $this->input->post('price'),
                 'updated_at' => DATE_TIME,
             );
 
-            $this->db->where('id', 1);
-            if ($this->db->update('seat', $dataUpdate)) {
+            $this->db->where('id', $id);
+            if ($this->db->update('topping', $dataInsert)) {
 
                 $this->session->set_flashdata('message_success', 'แก้ไขข้อมูลแล้ว');
                 if ($redirect) {
-                    redirect('seat');
+                    redirect('topping');
                 } else {
 
-                    redirect('seat/edit/' . $id);
+                    redirect('topping/edit/' . $id);
                 }
             }
         } else {
             $this->db->select('*');
-            $this->db->from('seat');
-            $this->db->where('id = ' . 1);
+            $this->db->from('topping');
+            $this->db->where('id = ' . $id);
             $this->db->limit(1);
             $this->db->order_by("id", "asc");
             $query = $this->db->get();
@@ -104,17 +117,17 @@ class Seat extends CI_Controller {
 
                 $dataEdit = array(
                     'id' => $row['id'],
-                    'res_seat' => $row,
+                    'res_topping' => $row,
                 );
 
 
                 $data = array(
-                    'content' => $this->load->view('seat/edit', $dataEdit, true),
+                    'content' => $this->load->view('topping/edit', $dataEdit, true),
                 );
                 $this->load->view('main_layout', $data);
             } else {
                 $data = array(
-                    'content' => $this->load->view('seat/index', '', true),
+                    'content' => $this->load->view('topping/index', '', true),
                 );
             }
         }
@@ -130,29 +143,32 @@ class Seat extends CI_Controller {
                 $redirect = false;
             }
 
+            if ($this->check_duplicate($this->input->post('topping_name'))) {
+                $dataInsert = array(
+                    'topping_name' => $this->input->post('topping_name'),
+                    'price' => $this->input->post('price'),
+                    'created_at' => DATE_TIME,
+                    'updated_at' => DATE_TIME,
+                );
 
-            $dataInsert = array(
-                'name' => $this->input->post('name'),
-            
-                'status' => $this->input->post('status'),
-                'created_at' => DATE_TIME,
-                'updated_at' => DATE_TIME,
-            );
-
-            if ($this->db->insert('seat', $dataInsert)) {
-                $this->session->set_flashdata('message_success', 'เพิ่มข้อมูลแล้ว');
-                if ($redirect) {
-                    redirect('seat');
-                } else {
-                    $insert_id = $this->db->insert_id();
-                    redirect('seat/edit/' . $insert_id);
+                if ($this->db->insert('topping', $dataInsert)) {
+                    $this->session->set_flashdata('message_success', 'เพิ่มข้อมูลแล้ว');
+                    if ($redirect) {
+                        redirect('topping');
+                    } else {
+                        $insert_id = $this->db->insert_id();
+                        redirect('topping/edit/' . $insert_id);
+                    }
                 }
+            } else {
+                $this->session->set_flashdata('message_error', 'ไม่ข้อมูลนี้อยู่แล้ว');
+                redirect('topping/add');
             }
         } else {
 
             //Option ภายในห้อง
             $this->db->select('*');
-            $this->db->from('seat');
+            $this->db->from('topping');
             $this->db->order_by("id", "asc");
             $query = $this->db->get();
             if ($query->num_rows() > 0) {
@@ -162,12 +178,12 @@ class Seat extends CI_Controller {
 
 
                 $data = array(
-                    'content' => $this->load->view('seat/add', $data_q, true),
+                    'content' => $this->load->view('topping/add', $data_q, true),
                 );
                 $this->load->view('main_layout', $data);
             } else {
                 $data = array(
-                    'content' => $this->load->view('seat/add', '', true),
+                    'content' => $this->load->view('topping/add', '', true),
                 );
                 $this->load->view('main_layout', $data);
             }
@@ -181,17 +197,15 @@ class Seat extends CI_Controller {
 
             foreach ($this->input->post('chkbox') as $ids) {
                 $this->db->where('id', $ids);
-                $this->db->delete('seat');
+                $this->db->delete('topping');
             }
             $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
-            redirect('seat');
-            
+            redirect('topping');
         } else {
-            
-            if ($this->db->delete('seat', array('id' => $id))) {
+
+            if ($this->db->delete('topping', array('id' => $id))) {
                 $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
-                redirect('seat');
-                
+                redirect('topping');
             }
         }
     }

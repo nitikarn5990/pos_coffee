@@ -48,15 +48,15 @@
                         </div>
                     </div>
                     <div class="box-body">
-                        <div class="col-xs-12">
-                            <table id="example" class="ui celled table " cellspacing="0" width="100%">
+                        <div class="col-xs-12 table-responsive">
+                            <table id="example" class="table table-hover table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
                                         <th>ลำดับ</th>
                                         <th>ชื่อ-สกุล</th>
                                         <th>ตำแหน่ง</th>
-                                        <th>สถานะ</th>
-                                        <th class="">แก้ไขล่าสุด</th>
+                                   
+                                        <th class="hidden">แก้ไขล่าสุด</th>
                                         <th class="">ตัวเลือก</th>
                                     </tr>
                                 </thead>
@@ -65,8 +65,8 @@
                                         <th>ลำดับ</th>
                                         <th>ชื่อ-สกุล</th>
                                         <th>ตำแหน่ง</th>
-                                        <th>สถานะ</th>
-                                        <th class="">แก้ไขล่าสุด</th>
+                                 
+                                        <th class="hidden">แก้ไขล่าสุด</th>
                                         <th class="">ตัวเลือก</th>
                                     </tr>
                                 </tfoot>
@@ -78,15 +78,15 @@
                                                 <td><?= $key + 1 ?></td>
                                                 <td><?= $rows['name'] ?></td>
                                                 <td><?= $rows['position'] ?></td>
-                                                <td><?= $rows['status'] ?></td>
-                                                <td class=""><?= ShowDateThTime($rows['updated_at']) ?></td>
+                                           
+                                                <td class="hidden"><?= ShowDateThTime($rows['updated_at']) ?></td>
                                                 <td class="">
-                                                    <p>
+                                                    <div class="">
                                                         <a href="<?= base_url() ?>administrator/edit/<?= $rows['id'] ?>" class="btn btn-sm btn-info">แก้ไข / ดู</a>
                                                         <a href="#" onclick="if (confirm('คุณต้องการลบข้อมูลนี้หรือใม่?') == true) {
                                                                     document.location.href = '<?= base_url() ?>administrator/delete/<?= $rows['id'] ?>'
                                                                             }" class="btn btn-sm btn-danger">ลบ</a>
-                                                    </p>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -106,13 +106,6 @@
 </section><!-- /.content -->
 
 
-
-<link rel="stylesheet" href="<?= base_url() ?>assets/plugins/datatable2/semantic.min.css">
-<link rel="stylesheet" href="<?= base_url() ?>assets/plugins/datatable2/dataTables.semanticui.min.css">
-
-<script src="<?= base_url() ?>assets/plugins/datatable2/jquery.dataTables.min.js"></script>
-<script src="<?= base_url() ?>assets/plugins/datatable2/dataTables.semanticui.min.js"></script>
-<script src="<?= base_url() ?>assets/plugins/datatable2/semantic.min.js"></script>
 
 
 

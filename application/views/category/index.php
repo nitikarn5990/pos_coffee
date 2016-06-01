@@ -62,9 +62,9 @@
                                     <tr>
                                         <th><input type="checkbox" id="chkboxall" name="chkbox" ></th>
                                         <th>รหัส</th>
-                                        <th>ชื่อหมวดหมู่</th>
-                                        <th>สถานะ</th>
-                                        <th class="">แก้ไขล่าสุด</th>
+                                        <th>หมวดหมู่</th>
+                                  
+                                        <th class="hidden">แก้ไขล่าสุด</th>
                                         <th class="">ตัวเลือก</th>
                                     </tr>
                                 </thead>
@@ -72,9 +72,9 @@
                                     <tr>
                                         <th></th>
                                         <th>รหัส</th>
-                                        <th>ชื่อหมวดหมู่</th>
-                                        <th>สถานะ</th>
-                                        <th class="">แก้ไขล่าสุด</th>
+                                        <th>หมวดหมู่</th>
+                                     
+                                        <th class="hidden">แก้ไขล่าสุด</th>
                                         <th class="">ตัวเลือก</th>
                                     </tr>
                                 </tfoot>
@@ -84,14 +84,13 @@
                                         <?php
                                         foreach ($resultq1 as $rows) {
                                             ?>
-                                            <tr class="<?= $rows['status'] == 'ใช้งาน' ? 'bg-success' : 'bg-danger' ?>">
+                                            <tr class="">
                                                 <td><input type="checkbox" class="chkbox" value="<?= $rows['id'] ?>" name="chkbox[]"></td>
                                                 <td><?= $rows['id'] ?></td>
                                                 <td><?= $rows['category_name'] ?></td>
 
-                                                <td><?= $rows['status'] ?></td>
 
-                                                <td class=""><?= ShowDateThTime($rows['updated_at']) ?></td>
+                                                <td class="hidden"><?= ShowDateThTime($rows['updated_at']) ?></td>
                                                 <td class="">
                                                     <a href="<?= base_url() ?>category/edit/<?= $rows['id'] ?>" class="btn btn-flat btn-sm btn-info">แก้ไข / ดู</a>
 

@@ -4,15 +4,15 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>ระบบรับชำระค่าใช้จ่ายผู้เช่าภายในหอพัก</title>
+        <title>ระบบจัดการร้านกาแฟ</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <!-- Bootstrap 3.3.5 -->
         <link rel="stylesheet" href="<?= base_url() ?>assets/bootstrap/css/bootstrap.min.css">
         <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="<?= base_url() ?>assets/font-awesome/css/font-awesome.min.css">
         <!-- Ionicons -->
-        <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+        <link rel="stylesheet" href="<?= base_url() ?>assets/ionicons/css/ionicons.min.css">
         <!-- Theme style -->
         <link rel="stylesheet" href="<?= base_url() ?>assets/dist/css/AdminLTE.min.css">
         <!-- iCheck -->
@@ -27,8 +27,11 @@
     </head>
     <body class="hold-transition login-page">
         <div class="login-box">
-            <div class="login-logo">
-                <b> ระบบรับชำระค่าใช้จ่ายผู้เช่าภายในหอพัก </b>
+            <div class="text-center">
+                <i class="fa fa-coffee fa-4x"></i> 
+            </div>
+            <div class="login-logo" style="font-weight: lighter;">
+                ระบบจัดการร้านกาแฟ
             </div><!-- /.login-logo -->
             <div class="login-box-body">
                 <!--Alert -->
@@ -48,7 +51,7 @@
                 <?php } ?>
 
                 <!--End Alert -->
-                <p class="login-box-msg">Login</p>
+                <p class="login-box-msg" style="font-size: 18px;"><i class="fa fa-key "></i> Login</p>
                 <form action="<?= base_url() ?>auth/login" method="post">
                     <div class="form-group has-feedback">
                         <input type="text" class="form-control" name="username" value="<?php echo set_value('username'); ?>" placeholder="Username">
@@ -61,7 +64,7 @@
                     <div class="row">
 
                         <div class="col-xs-12">
-                            <button type="submit" class="btn btn-primary btn-block btn-flat">เข้าสู่ระบบ</button>
+                            <button type="submit" class="btn bg-purple btn-block btn-flat">เข้าสู่ระบบ&nbsp;<i class="fa fa-arrow-circle-right"></i></button>
                         </div><!-- /.col -->
                     </div>
                 </form>

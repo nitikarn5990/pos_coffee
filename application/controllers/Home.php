@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Seat extends CI_Controller {
+class Home extends CI_Controller {
 
     /**
      * Index Page for this controller.
@@ -28,16 +28,14 @@ class Seat extends CI_Controller {
             $this->session->set_userdata('url_back', current_url());
             redirect('auth/login');
         }
-        
-      if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
+
+        if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
             redirect('404');
         }
     }
 
     public function index() {
 
-
-        //$condition = "username =" . "'" . $data['username'] . "' AND " . "password =" . "'" . $data['password'] . "'";
 
         $this->db->select('*');
         $this->db->from('seat');
@@ -53,11 +51,11 @@ class Seat extends CI_Controller {
 
 
             $data = array(
-                'content' => $this->load->view('seat/index', $data, true),
+                'content' => $this->load->view('home/index', $data, true),
             );
         } else {
             $data = array(
-                'content' => $this->load->view('seat/index', '', true),
+                'content' => $this->load->view('home/index', '', true),
             );
         }
 
@@ -133,7 +131,6 @@ class Seat extends CI_Controller {
 
             $dataInsert = array(
                 'name' => $this->input->post('name'),
-            
                 'status' => $this->input->post('status'),
                 'created_at' => DATE_TIME,
                 'updated_at' => DATE_TIME,
@@ -185,13 +182,11 @@ class Seat extends CI_Controller {
             }
             $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
             redirect('seat');
-            
         } else {
-            
+
             if ($this->db->delete('seat', array('id' => $id))) {
                 $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
                 redirect('seat');
-                
             }
         }
     }
