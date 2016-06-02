@@ -300,15 +300,13 @@ class Pos extends CI_Controller {
                     $this->db->where('menu_id', $value);
                     $this->db->where('menu_type', $menu_type);
                     $this->db->update('active_order_detail', ['qty' => $qty + $now_qty, 'updated_at' => DATE_TIME]);
-                    
-                  
-                  //  print_r($this->db->last_query());
-                  // die();
-                   
 
+
+                    //  print_r($this->db->last_query());
+                    // die();
                     //add to topping table
-                    $active_order_detail_id =  $this->db->get_where('active_order_detail', array('active_order_id' => $active_order_id, 'menu_id' => $value, 'menu_type' => $menu_type))
-                                            ->row_array()['id'];
+                    $active_order_detail_id = $this->db->get_where('active_order_detail', array('active_order_id' => $active_order_id, 'menu_id' => $value, 'menu_type' => $menu_type))
+                                    ->row_array()['id'];
                     if ($this->input->post('topping_id')[$key] != 0) {
 
                         $arrToppingID = explode(',', $this->input->post('topping_id')[$key]);
@@ -1013,7 +1011,8 @@ class Pos extends CI_Controller {
                     'status' => ($row['status']),
                     'total_price' => $this->get_total_price($active_order_id),
                     'total_qty' => $this->get_total_qty($active_order_id),
-                    'last_update' => $this->get_last_update($active_order_id)
+                    'last_update' => $this->get_last_update($active_order_id),
+                    'topping_list' => $this->get_topping_order_detail($row['id']),
                 );
             }
 //   $arr[] = [ 'total_qty' =>  $total_qty ];
@@ -1025,6 +1024,25 @@ class Pos extends CI_Controller {
         } else {
             return '';
         }
+    }
+
+    public function get_topping_order_detail($active_order_detail_id) {
+
+        $this->db->select('*');
+        $this->db->from('active_order_detail_topping');
+        $this->db->where("active_order_detail_id = " . $active_order_detail_id);
+        $this->db->order_by("topping", "asc");
+        $query = $this->db->get();
+       // print_r($query->result_array());
+      //  die();
+        
+        if ($query->num_rows() > 0) {
+            return $query->result_array();
+        }else{
+            
+            return '';
+        }
+      
     }
 
     public function ajax_remove_items() {

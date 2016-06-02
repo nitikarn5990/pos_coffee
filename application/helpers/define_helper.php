@@ -6,6 +6,8 @@ define("DATE_TIME", date('Y-m-d H:i:s'));
 
 define("DATE_TIME_FILE", date('YmdHis'));
 
+
+
 function Add_month($condi, $date) {
 
     //$date = "2016-04";
@@ -92,7 +94,6 @@ function ShowDateTh2($myDate) {
         return "";
     }
 }
-
 
 function ShowDateTh($myDate) {
     if ($myDate != "0000-00") {

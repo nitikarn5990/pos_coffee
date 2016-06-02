@@ -30,9 +30,47 @@ class bill extends CI_Controller {
         }
     }
 
-    public function index() {
+    public function index($active_order_id) {
+        if ($active_order_id != '') {
 
-        $this->load->view('bill', '', false);
+            $this->db->select("active_order_detail.*,SUM(active_order_detail.qty * active_order_detail.price) as total_price");
+            $this->db->select("SUM(active_order_detail.qty) as total_qty");
+            $this->db->select("menu.product");
+            $this->db->select("active_order.cashier_id");
+            $this->db->select("users.name");
+            $this->db->select("users.name");
+            $this->db->select("active_order.paid_date");
+             $this->db->select("active_order.cash_receive");
+            
+
+            $this->db->from('active_order');
+            $this->db->where('paid_date !=', '0000-00-00 00:00:00');
+            $this->db->where('active_order.id', $active_order_id);
+            $this->db->join('active_order_detail', 'active_order.id = active_order_detail.active_order_id');
+            $this->db->join('menu', 'active_order_detail.menu_id = menu.id');
+            $this->db->join('users', 'active_order.cashier_id = users.id');
+
+            //  $this->db->join('member', 'active_rent.member_id = member.id');
+            // $start_date = trim($this->input->post('date_start'));
+            //   $end_date = trim($this->input->post('date_end'));
+            //  $this->db->where('active_order.created_at BETWEEN "' . $start_date . '" and "' . $end_date . '"');
+            $this->db->group_by('active_order_detail.menu_id');
+            $this->db->group_by('active_order_detail.menu_type');
+            $this->db->order_by('menu.product', 'ASC');
+
+
+            $query = $this->db->get();
+          //  print_r($query->result_array());
+          // die();
+            if ($query->num_rows() > 0) {
+                $dataBill = [
+                    'res_bill' => $query->result_array(),
+                ];
+
+
+                $this->load->view('bill', $dataBill, false);
+            }
+        }
     }
 
     public function bill_end_month($id = '') {

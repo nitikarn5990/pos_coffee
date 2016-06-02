@@ -28,6 +28,9 @@ class Menu extends CI_Controller {
             $this->session->set_userdata('url_back', current_url());
             redirect('auth/login');
         }
+        if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
+            redirect('404');
+        }
     }
 
     public function index() {
@@ -70,28 +73,29 @@ class Menu extends CI_Controller {
                 $redirect = false;
             }
 
-            $dataInsert = array(
-                'product' => $this->input->post('product'),
-                'category_id' => $this->input->post('category_id'),
-                'hot' => $this->input->post('hot'),
-                'iced' => $this->input->post('iced'),
-                'smoothie' => $this->input->post('smoothie'),
-                'status' => $this->input->post('status'),
-                'created_at' => DATE_TIME,
-                'updated_at' => DATE_TIME,
-            );
+                $dataInsert = array(
+                    'product' => $this->input->post('product'),
+                    'category_id' => $this->input->post('category_id'),
+                    'hot' => $this->input->post('hot'),
+                    'iced' => $this->input->post('iced'),
+                    'smoothie' => $this->input->post('smoothie'),
+                    //  'status' => $this->input->post('status'),
+                    'created_at' => DATE_TIME,
+                    'updated_at' => DATE_TIME,
+                );
 
-            $this->db->where('id', $id);
-            if ($this->db->update('menu', $dataInsert)) {
+                $this->db->where('id', $id);
+                if ($this->db->update('menu', $dataInsert)) {
 
-                $this->session->set_flashdata('message_success', 'แก้ไขข้อมูลแล้ว');
-                if ($redirect) {
-                    redirect('menu');
-                } else {
+                    $this->session->set_flashdata('message_success', 'แก้ไขข้อมูลแล้ว');
+                    if ($redirect) {
+                        redirect('menu');
+                    } else {
 
-                    redirect('menu/edit/' . $id);
+                        redirect('menu/edit/' . $id);
+                    }
                 }
-            }
+            
         } else {
             $this->db->select('*');
             $this->db->from('menu');
@@ -123,6 +127,21 @@ class Menu extends CI_Controller {
         }
     }
 
+    public function check_duplicate($coffee_name) {
+
+        $this->db->select('*');
+        $this->db->from('menu');
+        $this->db->where("product = '" . $coffee_name . "'");
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+
+            return false;
+        } else {
+
+            return true;
+        }
+    }
+
     public function add() {
 
 
@@ -133,26 +152,32 @@ class Menu extends CI_Controller {
                 $redirect = false;
             }
 
+            if ($this->check_duplicate($this->input->post('product'))) {
 
-            $dataInsert = array(
-                'product' => $this->input->post('product'),
-                 'category_id' => $this->input->post('category_id'),
-                'hot' => $this->input->post('hot'),
-                'iced' => $this->input->post('iced'),
-                'smoothie' => $this->input->post('smoothie'),
-                'status' => $this->input->post('status'),
-                'created_at' => DATE_TIME,
-                'updated_at' => DATE_TIME,
-            );
+                $dataInsert = array(
+                    'product' => $this->input->post('product'),
+                    'category_id' => $this->input->post('category_id'),
+                    'hot' => $this->input->post('hot'),
+                    'iced' => $this->input->post('iced'),
+                    'smoothie' => $this->input->post('smoothie'),
+                    // 'status' => $this->input->post('status'),
+                    'created_at' => DATE_TIME,
+                    'updated_at' => DATE_TIME,
+                );
 
-            if ($this->db->insert('menu', $dataInsert)) {
-                $this->session->set_flashdata('message_success', 'เพิ่มข้อมูลแล้ว');
-                if ($redirect) {
-                    redirect('menu');
-                } else {
-                    $insert_id = $this->db->insert_id();
-                    redirect('menu/edit/' . $insert_id);
+                if ($this->db->insert('menu', $dataInsert)) {
+                    $this->session->set_flashdata('message_success', 'เพิ่มข้อมูลแล้ว');
+                    if ($redirect) {
+                        redirect('menu');
+                    } else {
+                        $insert_id = $this->db->insert_id();
+                        redirect('menu/edit/' . $insert_id);
+                    }
                 }
+            } else {
+                $this->session->set_flashdata('message_error', 'สินค้านี้มีในระบบแล้ว');
+
+                redirect('menu/add');
             }
         } else {
 

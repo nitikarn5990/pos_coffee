@@ -28,8 +28,9 @@ class administrator extends CI_Controller {
             $this->session->set_userdata('url_back', current_url());
             redirect('auth/login');
         }
-        if ($this->session->userdata('group') == 'admin') {
-              redirect(base_url('room'));
+
+        if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
+            redirect('404');
         }
     }
 
@@ -77,9 +78,33 @@ class administrator extends CI_Controller {
             $dataUpdate = array(
                 'name' => trim($this->input->post('name')),
                 'password' => encode_login(trim($this->input->post('password'))),
-                'status' => $this->input->post('status'),
+                'position' => $this->input->post('position'),
+                 'tel' => $this->input->post('tel'),
+                  'address' => $this->input->post('address'),
                 'updated_at' => DATE_TIME,
             );
+
+            if ($_FILES['image']['name'] != '') {
+
+
+                $datetime_file = DATE_TIME_FILE;
+
+                $array = explode('.', $_FILES['image']['name']);
+                $extension = $array[1];
+                //upload image
+                $config['upload_path'] = './uploads/';
+                $config['allowed_types'] = 'gif|jpg|png|jpeg';
+                $config['file_name'] = $datetime_file . '.' . $extension;
+
+                $field_name = "image";
+                $this->load->library('upload', $config);
+                if ($this->upload->do_upload($field_name)) {
+                    $dataUpdate = array('image' => $config['file_name']);
+                }
+            }
+            // end upload image
+
+
 
             if ($this->db->update('users', $dataUpdate, 'id = ' . $id)) {
 
@@ -142,10 +167,7 @@ class administrator extends CI_Controller {
 
     public function add() {
 
-
         if ($this->input->post('btn_submit') == 'บันทึก' || $this->input->post('btn_submit') == 'บันทึกและแก้ไขต่อ') {
-            
-      
 
             if ($this->input->post('btn_submit') == 'บันทึก') {
 
@@ -163,6 +185,7 @@ class administrator extends CI_Controller {
                 die();
             } else {
 
+
                 $dataInsert = array(
                     'username' => trim($this->input->post('username')),
                     'password' => encode_login(trim($this->input->post('password'))),
@@ -170,19 +193,45 @@ class administrator extends CI_Controller {
                     'tel' => $this->input->post('tel'),
                     'address' => $this->input->post('address'),
                     'position' => $this->input->post('position'),
-                    'status' => $this->input->post('status'),
+                    // 'status' => $this->input->post('status'),
                     'created_at' => DATE_TIME,
                     'updated_at' => DATE_TIME,
                 );
 
+
+
                 if ($this->db->insert('users', $dataInsert)) {
+
+                    $insert_id = $this->db->insert_id();
+                    //upload image
+                    if ($_FILES['image']['name'] != '') {
+                        $datetime_file = DATE_TIME_FILE;
+
+                        $array = explode('.', $_FILES['image']['name']);
+                        $extension = $array[1];
+                        //upload image
+                        $config['upload_path'] = './uploads/';
+                        $config['allowed_types'] = 'gif|jpg|png|jpeg';
+                        $config['file_name'] = $datetime_file . '.' . $extension;
+
+                        $field_name = "image";
+                        $this->load->library('upload', $config);
+                        if ($this->upload->do_upload($field_name)) {
+                            $arrData = array('image' => $config['file_name']);
+                              if ($this->db->update('users', $arrData, 'id = ' . $insert_id)) {
+                                  
+                              }
+                        }
+                    }
+
+                    // end upload image
 
                     $this->session->set_flashdata('message_success', 'เพิ่มข้อมูลแล้ว');
                     if ($redirect) {
                         redirect('administrator');
                         die();
                     } else {
-                        redirect('administrator/edit/' . $this->db->insert_id());
+                        redirect('administrator/edit/' .$insert_id);
                         die();
                     }
                 }
@@ -198,14 +247,14 @@ class administrator extends CI_Controller {
 
     public function repassword() {
 
-       
+
         if ($this->input->post('btn_submit') == 'บันทึก' || $this->input->post('btn_submit') == 'บันทึกและแก้ไขต่อ') {
 
 
             $cnt = $this->db->get_where('users', array('id' => $this->session->userdata('member_id'), 'password' => encode_login(trim($this->input->post('old_password')))))
                     ->num_rows();
-            
-          
+
+
             //เช็คถ้าใส่รหัสผ่านเดิมไม่ตรง
             if ($cnt == 0) {
                 $this->session->set_flashdata('message_error', 'รหัสผ่านเดิมไม่ถูกต้องต้อง');
@@ -275,20 +324,19 @@ class administrator extends CI_Controller {
 
     public function delete($id = '') {
 
-      
-  
-            if ($id != '') {
-                //  if ($this->db->update('rental', [ 'deleted_at' => DATE_TIME, 'status' => 'ลบ'], "id = " . $id)) {
-                $this->db->delete('users', "id = " . $id);
 
-              //  $room_id = $this->db->get_where('rental', array('id' => $id))->row_array()['room_id'];
-              //  $this->db->update('room', [ 'status' => 'ว่าง'], "id = " . $room_id);
 
-                $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
-                redirect('administrator');
-                // }
-            }
-        
+        if ($id != '') {
+            //  if ($this->db->update('rental', [ 'deleted_at' => DATE_TIME, 'status' => 'ลบ'], "id = " . $id)) {
+            $this->db->delete('users', "id = " . $id);
+
+            //  $room_id = $this->db->get_where('rental', array('id' => $id))->row_array()['room_id'];
+            //  $this->db->update('room', [ 'status' => 'ว่าง'], "id = " . $room_id);
+
+            $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
+            redirect('administrator');
+            // }
+        }
     }
 
 }

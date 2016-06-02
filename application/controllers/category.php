@@ -28,6 +28,9 @@ class Category extends CI_Controller {
             $this->session->set_userdata('url_back', current_url());
             redirect('auth/login');
         }
+          if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
+            redirect('404');
+        }
     }
 
     public function index() {
@@ -70,7 +73,7 @@ class Category extends CI_Controller {
 
             $dataInsert = array(
                 'category_name' => $this->input->post('category_name'),
-                'status' => $this->input->post('status'),
+              //  'status' => $this->input->post('status'),
                 'created_at' => DATE_TIME,
                 'updated_at' => DATE_TIME,
             );
@@ -129,7 +132,7 @@ class Category extends CI_Controller {
 
             $dataInsert = array(
                 'category_name' => $this->input->post('category_name'),
-                'status' => $this->input->post('status'),
+              //  'status' => $this->input->post('status'),
                 'created_at' => DATE_TIME,
                 'updated_at' => DATE_TIME,
             );

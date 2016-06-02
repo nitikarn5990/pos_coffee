@@ -28,6 +28,10 @@ class Home extends CI_Controller {
             $this->session->set_userdata('url_back', current_url());
             redirect('auth/login');
         }
+
+        if ($this->session->userdata('position') != 'ผู้ดูแลระบบ') {
+            redirect('404');
+        }
     }
 
     public function index() {
@@ -127,7 +131,6 @@ class Home extends CI_Controller {
 
             $dataInsert = array(
                 'name' => $this->input->post('name'),
-            
                 'status' => $this->input->post('status'),
                 'created_at' => DATE_TIME,
                 'updated_at' => DATE_TIME,
@@ -179,13 +182,11 @@ class Home extends CI_Controller {
             }
             $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
             redirect('seat');
-            
         } else {
-            
+
             if ($this->db->delete('seat', array('id' => $id))) {
                 $this->session->set_flashdata('message_success', 'ลบข้อมูลแล้ว');
                 redirect('seat');
-                
             }
         }
     }

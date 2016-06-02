@@ -23,7 +23,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://192.168.1.42/ci_coffee';
+        function getLocalIP() {
+            exec("ipconfig /all", $output);
+            foreach ($output as $line) {
+                if (preg_match("/(.*)IPv4 Address(.*)/", $line)) {
+                    $ip = $line;
+                    $ip = str_replace("IPv4 Address. . . . . . . . . . . :", "", $ip);
+                    $ip = str_replace("(Preferred)", "", $ip);
+                }
+            }
+            return trim($ip);
+          
+        }
+
+        $ip = 'http://'.getLocalIP().'/ci_coffee/'; //This will return: 192.168.x.x (Your Local IP)
+
+      //  echo $ip = getLocalIP(); //This will return: 192.168.x.x (Your Local IP)
+$config['base_url'] = $ip;
 
 /*
 |--------------------------------------------------------------------------
