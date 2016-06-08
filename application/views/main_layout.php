@@ -54,13 +54,15 @@
 
     <link rel="stylesheet" type="text/css" href="<?= base_url() ?>assets/plugins/popr/popr.css">
     <script type="text/javascript" src="<?= base_url() ?>assets/plugins/popr/popr.js"></script>
-
+    <link rel="stylesheet" href="bootstrap.css">
 
 </head>
 <body class="sidebar-mini sidebar-collapse skin-purple ">
 <?php
 $user_image = $this->db->get_where('users', array('id' => $this->session->userdata('users_id')))->row_array()['image'];
+
 ?>
+
 <div class="wrapper">
 
     <header class="main-header">
@@ -612,6 +614,16 @@ $user_image = $this->db->get_where('users', array('id' => $this->session->userda
         margin-bottom: 5px;
     }
 
+    .text-topping {
+        color: #5e5e5e;
+        font-style: italic;
+        font-size: 14px;
+    }
+
+    td {
+        border: 2px solid #f4f4f4;
+    }
+
 
 </style>
 
@@ -629,8 +641,6 @@ $user_image = $this->db->get_where('users', array('id' => $this->session->userda
                     <div class="col-md-6">
                         <h4 class="menu-name">menu-name</h4>
                         <h4>Base price : <span class="menu-price">50</span></h4>
-
-
                     </div>
 
                 </div>

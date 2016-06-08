@@ -182,7 +182,7 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label
-                                                            class="control-label col-md-3 col-xs-3 text-right">รวม</label>
+                                                            class="control-label  col-md-3 col-xs-3 text-right">รวม</label>
                                                         <div class="col-md-9 col-xs-9">
                                                             <p class="form-control-static text-bold"
                                                                style="font-size: 20px;">฿ <span id="detail-total-price">0</span>.00
@@ -216,14 +216,13 @@
                                     <div class="col-md-12 col-xs-12">
                                         <div class="table-responsive" id="list-menu">
                                             <table class="table table-condensed">
-
                                                 <thead>
                                                 <th style="width: 10px">Del</th>
                                                 <th style="width: 40px" class="text-center">Qty</th>
                                                 <th class="text-left">Product</th>
 
                                                 <th style="width: 100px" class="text-right ">Price</th>
-                                                <th style="width: 100px" class="text-right">Ext.Price</th>
+                                                <th style="width: 150px" class="text-right">Ext.Price</th>
                                                 </thead>
                                                 <tbody>
                                                 <tr>
@@ -231,7 +230,6 @@
                                                     <td class="text-center text-bold" style="font-size: 16px;"><p
                                                             style="color: blue;">0</p></td>
                                                     <td style="font-size: 16px;"></td>
-
                                                     <td class="text-right" style="font-size: 16px;">
                                                         ฿ 0.00
                                                     </td>
@@ -479,7 +477,7 @@
                                                 <th class="text-left">Product</th>
 
                                                 <th style="width: 100px" class="text-right ">Price</th>
-                                                <th style="width: 100px" class="text-right">Ext.Price</th>
+                                                <th style="width: 150px" class="text-right">Ext.Price</th>
                                                 </thead>
                                                 <tbody>
                                                 <tr>
@@ -702,7 +700,7 @@
                                                 <th class="text-left">Product</th>
 
                                                 <th style="width: 100px" class="text-right ">Price</th>
-                                                <th style="width: 100px" class="text-right">Ext.Price</th>
+                                                <th style="width: 150px" class="text-right">Ext.Price</th>
                                                 </thead>
                                                 <tbody>
                                                 <tr>
@@ -1372,12 +1370,13 @@
     }
 
 
-    function edit_qty(ele) {
+    function edit_qty(ele, active_order_detail_id = '') {
 
         var active_order_id = $(ele).closest('tr').attr('data-detail-active_order_id');
         var menu_id = $(ele).closest('tr').attr('data-detail-menu_id');
         var menu_type = $(ele).closest('tr').attr('data-detail-menu_type');
         var qty = $(ele).closest('tr').attr('data-qty');
+        var order_detail_id = active_order_detail_id == '' ? '' : active_order_detail_id;
 
         bootbox.prompt({
             title: "เพิ่ม/ลด จำนวน",
@@ -1392,6 +1391,7 @@
                             type: 'get',
                             url: '<?= base_url('pos/ajax_edit_items') ?>',
                             data: {
+                                active_order_detail_id: order_detail_id,
                                 active_order_id: active_order_id,
                                 menu_id: menu_id,
                                 menu_type: menu_type,
@@ -1411,20 +1411,19 @@
         });
     }
 
-
     function SumDetailTable(open_detail) {
 
         var tables_number = $("#selected_table").val();
         var html = '';
-
 
         if (tables_number !== '') {
 
             $.ajax({
                 type: 'get',
                 url: '<?= base_url('pos/ajax_sum_detail_table') ?>',
-                data: {tables_number: tables_number},
-
+                data: { 
+                    tables_number: tables_number
+                },
                 success: function (data) {
                     var data2 = $.parseJSON(data);
                     //    console.log(data2);
@@ -1483,22 +1482,21 @@
                                     html += "<td class='text-center text-bold' style='font-size: 16px;'><p style='color: blue;'>" + val.qty + "</p></td>";
                                     html += "<td style='font-size: 16px;'>" + val.product + "  (" + menu_type + ")<span class='pull-right'><button type='button' class='btn btn-xs btn-default'  onclick='edit_qty(this)' ><i class='fa fa-edit'></i> จำนวน</button>&nbsp;&nbsp;<label class='control-label " + class_text_color + "' for='inputWarning' style='font-weight: lighter;'> " + text_status + "</label></span>" + label + box_topping + "</td>";
                                     html += "<td class='text-right' style='font-size: 16px;'>";
-                                    html += "<span>฿ " + val.price + "</span>";
+                                    html += "<span>฿ " + val.price + ".00</span>";
                                     html += "</td>";
-                                    html += "<td class='text-right text-bold' style='font-size: 16px;'>฿ " + _sum_total + "</td>";
+                                    html += "<td class='text-right text-bold' style='font-size: 16px;'>฿ " + _sum_total + ".00</td>";
                                     html += "</tr>";
                                 });
                                 $("#list-menu table tbody").html(html);
                             }
-                        } else {
 
+                        } else {
                             //click see detail
                             //wait for change
+                            var total_price = 0;
                             $.each(data2, function (i, val) {
-
-
+                            
                                 var id = val.id;
-                                var total_price = val.total_price;
                                 var total_qty = val.total_qty;
 
                                 var active_order_id = val.active_order_id;
@@ -1524,34 +1522,57 @@
                                 }
 
                                 //for find topping list
-                                var box_topping = "<ul><li>test</li></ul>";
-                                $.each(data2, function (i, val) {
+
+                                var box_topping_li = '';
+                                //วนรอบหาราคารวมของ topping
+                                var total_topping = 0;
+                                $.each(val.topping_list, function (i, val) {
+                                    //  console.log(val);
+                                    box_topping_li += "<li>+ " + val.topping + ", &nbsp;&nbsp; " + val.price + " ฿ </li>";
+                                    total_topping += parseInt(val.price);
+
                                 });
 
-                                console.log(val.topping_list);
+                                var box_topping = "<ul class='text-topping'>" + box_topping_li + "</ul>";
+
+                                var box_topping_total_price = '';
+                                if (total_topping > 0) {
+
+                                    box_topping_total_price = "<ul class='text-topping'><li class='pull-left'>+ " + total_topping + ".00</li></ul>";
+
+                                }
+
+                                // var _sum_total = parseInt(val.qty) * parseInt(val.price);
+                                var _sum_total = ( parseInt(val.price) + total_topping ) * parseInt(val.qty);
+                                total_price += _sum_total;
 
 
                                 $(".detail-tb-number").text(tables_number);
                                 $("#detail-created").text(val.created_at);
                                 $("#detail-items").text(total_qty);
-                                $("#detail-total-price").text(total_price);
-                                $("#pay_money").text(total_price);
+
                                 //set change
                                 $("#last_update").val(val.last_update);
                                 $("#num_rows").val(val.num_rows);
-                                var _sum_total = parseInt(val.qty) * parseInt(val.price);
+
+
 
 
                                 html += "<tr data-qty=" + val.qty + " data-detail-active_order_id=" + active_order_id + " data-detail-menu_id=" + menu_id + " data-detail-menu_type='" + menu_type_eng + "'>";
                                 html += "<td><button type='button' class='btn btn-xs btn-flat btn-danger' onclick='remove_item(" + id + ")'><i class='fa fa-trash'></i></button></td>";
                                 html += "<td class='text-center text-bold' style='font-size: 16px;'><p style='color: blue;'>" + val.qty + "</p></td>";
-                                html += "<td style='font-size: 16px;'>" + val.product + "  (" + menu_type + ")<span class='pull-right'><button type='button' class='btn btn-xs btn-default'  onclick='edit_qty(this)' ><i class='fa fa-edit'></i> จำนวน</button>&nbsp;&nbsp;<label class='control-label " + class_text_color + "' for='inputWarning' style='font-weight: lighter;'> " + text_status + "</label></span> " + box_topping + " </td>";
+                                html += "<td style='font-size: 16px;'>" + val.product + "  (" + menu_type + ")<span class='pull-right'><button type='button' class='btn btn-xs btn-default'  onclick='edit_qty(this, "+ id +")' ><i class='fa fa-edit'></i> จำนวน</button>&nbsp;&nbsp;<label class='control-label " + class_text_color + "' for='inputWarning' style='font-weight: lighter;'> " + text_status + "</label></span> " + box_topping + " </td>";
                                 html += "<td class='text-right' style='font-size: 16px;'>";
-                                html += "<span>฿ " + val.price + "</span>";
+                                html += "<span>฿ " + val.price + ".00</span>";
+                                html += box_topping_total_price;
                                 html += "</td>";
-                                html += "<td class='text-right text-bold' style='font-size: 16px;'>฿ " + _sum_total + "</td>";
+                                html += "<td class='text-right text-bold' style='font-size: 16px;'>฿ " + _sum_total + ".00</td>";
                                 html += "</tr>";
+                                
                             });
+
+                            $("#detail-total-price").text(total_price);
+                            $("#pay_money").text(total_price);
                             $("#list-menu table tbody").html(html);
                         }
                     } else {
@@ -1945,6 +1966,7 @@
     }
 
     function select_table(ele) {
+    
         $('.tile').removeClass('selected');
 
         var data_tables = $(ele).attr('data-tables');
@@ -1966,8 +1988,7 @@
         }
 
         SumDetailTable('open_detail');
-
-
+        
     }
 
     function cal_change_fit() {
