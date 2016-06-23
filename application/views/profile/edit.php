@@ -148,12 +148,12 @@
 <link rel="stylesheet" href="<?= base_url() ?>assets/plugins/switch/css/on-off-switch.css">
 <script>
 
-    new DG.OnOffSwitch({
-        el: '#on-off-switch',
-        textOn: 'เปิดสัญญา',
-        textOff: 'ปิดสัญญา',
-        listener: function (name, checked) {
-
-        }
-    });
+//    new DG.OnOffSwitch({
+//        el: '#on-off-switch',
+//        textOn: 'เปิดสัญญา',
+//        textOff: 'ปิดสัญญา',
+//        listener: function (name, checked) {
+//
+//        }
+//    });
 </script>

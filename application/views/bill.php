@@ -39,7 +39,7 @@
                     </div><!-- /.col -->
                     <div class="col-xs-12 text-center">
                         <small>
-                            279/1 ถนน บุญวาทย์ ต. สวนดอก อ. เมือง จ.ลำปาง 52000
+                            279/1 ถนน บุญวาทย์ ต.สวนดอก อ.เมือง จ.ลำปาง 52000
                         </small>
                     </div>
                 </div>
@@ -61,15 +61,24 @@
                                     <th>Qty</th>
                                     <th>Product</th>
                                     <th class="text-right">Price</th>
-
+                                    <th class="text-right">Ext.Price</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
                                 $total_price = 0;
+                                $total_topping = 0;
+                                $grand_total = 0;
+                                
+                                $ext_total = 0;
+
                                 foreach ($res_bill as $key => $rows) {
+
+                                    $total_topping = 0;
+                                    $total_price = 0;
+                                    $ext_total = 0;
                                     $menu_type = '';
-                                    $total_price = $total_price + ($rows['price'] * $rows['qty']);
+                                    // $total_price = $total_price + ($rows['price'] * $rows['qty']);
                                     if ($rows['menu_type'] == 'hot') {
                                         $menu_type = '(ร้อน)';
                                     }
@@ -82,31 +91,66 @@
                                     ?>
                                     <tr>
                                         <td><?= $rows['qty'] ?></td>
-                                        <td><?= $rows['product'] . " " . $menu_type ?></td>
-                                        <td class="text-right"><?= ($rows['price'] * $rows['qty']) ?>.00</td>
+                                        <td><?= $rows['product'] . " " . $menu_type ?>
+
+                                            <?php
+                                            $this->db->select("*");
+                                            $this->db->from('active_order_detail_topping');
+                                            $this->db->where('active_order_detail_id =', $rows['id']);
+                                            $query = $this->db->get();
+                                            //    print_r($query->result_array());
+                                            if ($query->num_rows() > 0) {
+                                                echo "<ul class='list-unstyled' style='padding-left: 10px;'>";
+                                                foreach ($query->result_array() as $row) {
+
+                                                    echo "<li>+ " . $row['topping'] . "</li>";
+                                                }
+                                                echo "</ul>";
+                                            }
+                                            ?>
+                                        </td>
+                                        <td class="text-right">
+                                            ฿ <?= ($rows['price']) ?>.00
+                                            <?php
+                                            $this->db->select("*");
+                                            $this->db->from('active_order_detail_topping');
+                                            $this->db->where('active_order_detail_id =', $rows['id']);
+                                            $query = $this->db->get();
+                                            //    print_r($query->result_array());
+                                            if ($query->num_rows() > 0) {
+                                                echo "<ul class='list-unstyled' style='padding-left: 0px;'>";
+                                                foreach ($query->result_array() as $row) {
+
+                                                    echo "<li>+ ฿ " . $row['price'] . ".00</li>";
+                                                    $total_topping = $total_topping + $row['price'];
+                                                    $ext_total  = $total_topping + $row['price'];
+                                                }
+                                                echo "</ul>";
+                                            }
+                                            $ext_total = $total_topping + $rows['price'];
+                                            ?>
+
+                                        </td>
+                                        <?php $grand_total = $grand_total + (($rows['price'] + $total_topping) * $rows['qty']) ?>
+                                        <td class="text-right">฿ <?= $ext_total  ?>.00</td>
                                     </tr>
                                 <?php } ?>
-
                             </tbody>
                         </table>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
-
                 <div class="row">
-
                     <div class="col-xs-12">
                         <div class="">
                             <table class="table">
-
                                 <tr>
                                     <th>Total:</th>
-
-                                    <td colspan="2" class="text-right"><?= $total_price ?>.00</td>
+                                    <td colspan="2" class="text-right">฿ <?= $grand_total ?>.00</td>
                                 </tr>
                                 <tr>
-                                    <td>Pay Cash <?= $res_bill[0]['cash_receive'] ?>.00</td>
+                                    <td>Pay Cash ฿ <?= $res_bill[0]['cash_receive'] ?>.00</td>
 
-                                    <td colspan="2" class="text-right">Change  <?= $res_bill[0]['cash_receive'] - $total_price ?>.00</td>
+                                    <td colspan="2" class="text-right">Change  ฿<?= $res_bill[0]['cash_receive'] - $grand_total ?>.00</td>
                                 </tr>
                             </table>
                         </div>
@@ -131,11 +175,11 @@
             }
         </style>
         <script>
-   
-            window.print();
-              setTimeout(function () { window.close(); }, 1000);
-      
-        
+
+             window.print();
+              setTimeout(function () { window.close(); }, 2000);
+
+
         </script>
 
     </body>

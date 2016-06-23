@@ -39,7 +39,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         $ip = 'http://'.getLocalIP().'/ci_coffee/'; //This will return: 192.168.x.x (Your Local IP)
 
       //  echo $ip = getLocalIP(); //This will return: 192.168.x.x (Your Local IP)
-$config['base_url'] = $ip;
+$config['base_url'] = '';
 
 /*
 |--------------------------------------------------------------------------

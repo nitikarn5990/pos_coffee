@@ -28,7 +28,7 @@
     </div>
     <div class="row">
 
-        <div class="col-md-5">
+        <div class="col-md-7">
             <form action="<?= base_url() ?>pos/buy_back_home" method="POST">
               
                 <input type="hidden"  name="active_order_id" value="<?=$active_order_id?>">
@@ -57,6 +57,7 @@
 
                                         <th  style="width: 100px" class="text-center">Qty</th>
                                         <th  class="text-left">Product</th>
+                                        <th  class="text-left">หายเหตุ</th>
 
                                         <th style="width: 100px" class="text-right">Total</th>
                                         <th style="width: 30px" class="text-right">ลบ</th>
@@ -90,7 +91,7 @@
                 </div>
             </form>
         </div><!-- /.col -->
-        <div class="col-md-7">
+        <div class="col-md-5">
 
             <form action="<?= base_url() ?>" method="POST">
                 <div class="box box-widget">

@@ -28,7 +28,7 @@
     </div>
     <div class="row">
 
-        <div class="col-md-5">
+        <div class="col-md-7">
             <form action="<?= base_url() ?>pos/tables" method="POST">
                 <input type="hidden" name="tables_number" value="<?= $tables_number ?>">
                 <input type="hidden"  name="list_menu" value="list_menu">
@@ -56,7 +56,7 @@
 
                                         <th  style="width: 100px" class="text-center">Qty</th>
                                         <th  class="text-left">Product</th>
-
+                                        <th style="width: 100px" class="text-right ">หมายเหตุ</th>
                                         <th style="width: 100px" class="text-right">Total</th>
                                         <th style="width: 30px" class="text-right">ลบ</th>
                                         </thead>
@@ -89,7 +89,7 @@
                 </div>
             </form>
         </div><!-- /.col -->
-        <div class="col-md-7">
+        <div class="col-md-5">
 
             <form action="<?= base_url() ?>" method="POST">
                 <div class="box box-widget">
