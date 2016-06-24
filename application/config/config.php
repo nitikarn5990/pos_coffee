@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-        function getLocalIP() {
+/*        function getLocalIP() {
             exec("ipconfig /all", $output);
             foreach ($output as $line) {
                 if (preg_match("/(.*)IPv4 Address(.*)/", $line)) {
@@ -37,6 +37,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
 
         $ip = 'http://'.getLocalIP().'/ci_coffee/'; //This will return: 192.168.x.x (Your Local IP)
+		*/
 
       //  echo $ip = getLocalIP(); //This will return: 192.168.x.x (Your Local IP)
 $config['base_url'] = '';

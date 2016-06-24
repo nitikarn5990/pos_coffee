@@ -953,9 +953,9 @@
 
         //  
         //   audioElement.setAttribute('src', 'http://www.noiseaddicts.com/samples_1w72b820/3724.mp3');
-       // audioElement.setAttribute('autoplay:false', 'autoplay');
+        // audioElement.setAttribute('autoplay:false', 'autoplay');
         //audioElement.load code above. if you take out :false from the code the file will auto play than everythin works the same after that()
-       // $.get();
+        // $.get();
 //        audioElement.addEventListener("load", function () {
 //            audioElement.play();
 //        }, true);
@@ -1190,9 +1190,9 @@
                             //wait for change
                             var total_price = 0;
 
-
+                           // console.log(data2);
                             $.each(data2, function (i, val) {
-                                // console.log(val);
+
                                 var active_order_detail_id = val.id;
                                 var id = val.id;
                                 var total_qty = val.total_qty;
@@ -1209,11 +1209,14 @@
 
 
                                 var class_text_color = '';
-                                var text_status = '';
-//                                                                if (parseInt(still_waiting) > 0) {
-//                                                                    class_text_color = 'text-yellow';
-//                                                                    text_status = "<small class='label label-warning'><i class='fa fa-clock-o'></i> Waiting for " + still_waiting + "</small>";
-//                                                                } else {
+                                var box_still_waiting = '';
+                                if (parseInt(still_waiting) > 0) {
+
+                                    box_still_waiting = "<small class='label label-warning'><i class='fa fa-clock-o'></i> Waiting for " + still_waiting + "</small>";
+                                } else {
+                                    box_still_waiting = '';
+                                }
+//                                                                else {
 //                                                                    class_text_color = 'text-green';
 //                                                                    text_status = "<small class='label label-success'>Finished</small>";
 //                                                                }
@@ -1274,7 +1277,7 @@
                                 html += "<tr data-active-order-detail-id=" + active_order_detail_id + " data-qty=" + val.qty + " data-detail-active_order_id=" + active_order_id + " data-detail-menu_id=" + menu_id + " data-detail-menu_type='" + menu_type_eng + "'>";
                                 html += "<td><button type='button' class='btn btn-xs btn-flat btn-danger' onclick='remove_item(" + id + ")'><i class='fa fa-trash'></i></button></td>";
                                 html += "<td class='text-center text-bold' style='font-size: 16px;'><p style='color: blue;'>" + val.qty + "</p></td>";
-                                html += "<td style='font-size: 16px;'><div class='row'><div class='col-md-7'><span id='menu-name'>" + val.product + "  (" + menu_type + ")</span> " + box_topping + "</div><div class='col-md-5'><span class=''><button type='button' class='btn btn-xs btn-default'  onclick='edit_qty(this, " + id + ")' ><i class='fa fa-edit'></i> จำนวน</button>&nbsp;&nbsp;</span> " + btn_edit_topping + btn_comment + " <label class='control-label " + class_text_color + "' for='inputWarning' style='font-weight: lighter;'> " + text_status + "</label></div></div></td>";
+                                html += "<td style='font-size: 16px;'><div class='row'><div class='col-md-7'><span id='menu-name'>" + val.product + "  (" + menu_type + ")</span> " + box_topping + "</div><div class='col-md-5'><span class=''><button type='button' class='btn btn-xs btn-default'  onclick='edit_qty(this, " + id + ")' ><i class='fa fa-edit'></i> จำนวน</button>&nbsp;&nbsp;</span> " + btn_edit_topping + btn_comment + " <label class='control-label " + class_text_color + "' for='inputWarning' style='font-weight: lighter;'> " + text_status + "</label>" + box_still_waiting + "</div></div></td>";
 
                                 html += "<td class='' style='font-size: 13px;' ><span id='str_comment'>" + val.comment + "</span></td>";
                                 html += "<td class='text-right' style='font-size: 16px;'>";
@@ -1497,13 +1500,13 @@
 
                                 var class_text_color = '';
                                 var text_status = '';
-//                                                                if (parseInt(still_waiting) > 0) {
-//                                                                    class_text_color = 'text-yellow';
-//                                                                    text_status = "<small class='label label-warning'><i class='fa fa-clock-o'></i> Waiting for " + still_waiting + "</small>";
-//                                                                } else {
-//                                                                    class_text_color = 'text-green';
-//                                                                    text_status = "<small class='label label-success'>Finished</small>";
-//                                                                }
+                                var box_still_waiting = '';
+                                if (parseInt(still_waiting) > 0) {
+
+                                    box_still_waiting = "<small class='label label-warning'><i class='fa fa-clock-o'></i> Waiting for " + still_waiting + "</small>";
+                                } else {
+                                    box_still_waiting = '';
+                                }
                                 if (status === 'ทำเสร็จแล้ว') {
                                     class_text_color = 'text-yellow';
                                     text_status = "<small class='label label-success'><i class='fa fa-check'></i>  " + status + "</small>";
@@ -1562,7 +1565,7 @@
                                 html += "<tr data-active-order-detail-id=" + active_order_detail_id + " data-qty=" + val.qty + " data-detail-active_order_id=" + active_order_id + " data-detail-menu_id=" + menu_id + " data-detail-menu_type='" + menu_type_eng + "'>";
                                 html += "<td><button type='button' class='btn btn-xs btn-flat btn-danger' onclick='remove_item(" + id + ")'><i class='fa fa-trash'></i></button></td>";
                                 html += "<td class='text-center text-bold' style='font-size: 16px;'><p style='color: blue;'>" + val.qty + "</p></td>";
-                                html += "<td style='font-size: 16px;'><div class='row'><div class='col-md-7'><span id='menu-name'>" + val.product + "  (" + menu_type + ")</span> " + box_topping + "</div><div class='col-md-5'><span class=''><button type='button' class='btn btn-xs btn-default'  onclick='edit_qty(this, " + id + ")' ><i class='fa fa-edit'></i> จำนวน</button>&nbsp;&nbsp;</span> " + btn_edit_topping + btn_comment + " <label class='control-label " + class_text_color + "' for='inputWarning' style='font-weight: lighter;'> " + text_status + "</label></div></div></td>";
+                                html += "<td style='font-size: 16px;'><div class='row'><div class='col-md-7'><span id='menu-name'>" + val.product + "  (" + menu_type + ")</span> " + box_topping + "</div><div class='col-md-5'><span class=''><button type='button' class='btn btn-xs btn-default'  onclick='edit_qty(this, " + id + ")' ><i class='fa fa-edit'></i> จำนวน</button>&nbsp;&nbsp;</span> " + btn_edit_topping + btn_comment + " <label class='control-label " + class_text_color + "' for='inputWarning' style='font-weight: lighter;'> " + text_status + "</label> "+box_still_waiting+"</div></div></td>";
 
                                 html += "<td class='' style='font-size: 13px;' ><span id='str_comment'>" + val.comment + "</span></td>";
                                 html += "<td class='text-right' style='font-size: 16px;'>";
@@ -1764,37 +1767,37 @@
     }
 
     //for buy back home
-    
-   var length_row = 0;
-    function count_row_tb_waiting_has_change(){
-      var cnt_row =  $('#togo-list-waiting table tbody tr').length;
-      
-      if(cnt_row > length_row){
-          length_row = cnt_row;
-          $('.play-button').trigger('click');
-           
-      }else{
-          length_row = cnt_row;
-      }
-     
+
+    var length_row = 0;
+    function count_row_tb_waiting_has_change() {
+        var cnt_row = $('#togo-list-waiting table tbody tr').length;
+
+        if (cnt_row > length_row) {
+            length_row = cnt_row;
+            $('.play-button').trigger('click');
+
+        } else {
+            length_row = cnt_row;
+        }
+
     }
-     var length_item = 0;
-    function count_item_tb_waiting_has_change(){
-      var cnt_row =  $('#togo-list-waiting table tbody tr');
-      var items = 0;
-       $(cnt_row).each(function(){
-          items = items + parseInt($(this).find('#item_count').text());
-           //console.log($(this).find('#item_count').text());
-       });
-      
-      if(items > length_item){
-          length_item = items;
-          $('.play-button').trigger('click');
-         
-      }else{
-         length_item = items;
-      }
-     
+    var length_item = 0;
+    function count_item_tb_waiting_has_change() {
+        var cnt_row = $('#togo-list-waiting table tbody tr');
+        var items = 0;
+        $(cnt_row).each(function () {
+            items = items + parseInt($(this).find('#item_count').text());
+            //console.log($(this).find('#item_count').text());
+        });
+
+        if (items > length_item) {
+            length_item = items;
+            $('.play-button').trigger('click');
+
+        } else {
+            length_item = items;
+        }
+
     }
     function SumMainTableBarista() {
 
@@ -1817,7 +1820,7 @@
 
 
         var count_total_qty_barista_current = 0; //นับจำนวนสินค้าทั้งหมด
-       // count_total_qty_barista_old = 0;
+        // count_total_qty_barista_old = 0;
 
 
         $.ajax({
@@ -1837,7 +1840,7 @@
                     total_price = val.total;
                     active_order_id = val.active_order_id;
                     barista_total_qty = val.total_qty;
-                  //  count_total_qty_barista_old = val.total_qty;
+                    //  count_total_qty_barista_old = val.total_qty;
 
                     tables_number = val.tables_number;
                     created_at = val.created_at;
@@ -1890,32 +1893,32 @@
 
                 });
                 $("#togo-list-waiting table tbody").html(tr_0);
-                 count_row_tb_waiting_has_change();
-                 count_item_tb_waiting_has_change();
-              //  $("#togo-list-all-finished table tbody").html(tr_1);
+                count_row_tb_waiting_has_change();
+                count_item_tb_waiting_has_change();
+                //  $("#togo-list-all-finished table tbody").html(tr_1);
 
                 //เช็คการแจ้งเตือนของ barista
 
                 if (count_row_barista_current > count_row_barista) {
                     //ถ้า row มากกว่าก่อน ให้มีเสียงแจ้งเตือน
-                   // $('.play-button').trigger('click');
-                   // count_row_barista = count_row_barista_current;
+                    // $('.play-button').trigger('click');
+                    // count_row_barista = count_row_barista_current;
                     // console.log(count_row_barista);
                 }
-                
+
                 // console.log(count_total_qty_barista_current + ','+ count_total_qty_barista_old);
                 if (count_total_qty_barista_current > count_total_qty_barista_old) {
                     //ถ้า row มากกว่าก่อน ให้มีเสียงแจ้งเตือน
-                  //  $('.play-button').trigger('click');
-                  //  count_total_qty_barista_old = count_total_qty_barista_current;
+                    //  $('.play-button').trigger('click');
+                    //  count_total_qty_barista_old = count_total_qty_barista_current;
                     //console.log(count_row_barista);
                 }
-               
+
 
 
                 var active_order_id_selected = $('#active_order_id_selected').val();
-                if(active_order_id_selected != ''){
-                $('#tables-control table tbody').find("[data-active-order-id=" + active_order_id_selected + "]").addClass('bg-purple');
+                if (active_order_id_selected != '') {
+                    $('#tables-control table tbody').find("[data-active-order-id=" + active_order_id_selected + "]").addClass('bg-purple');
                 }
                 $('#num_rows_main_backhome').val(num_rows);
 
